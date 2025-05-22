@@ -265,7 +265,7 @@ function Dashboard() {
 					nomor_rekening: nomorRekening,
 					nama_pemilik_rekening: namaPemilikRekening,
 					nama_bank: namaBank,
-					judul_galang_dana: judul,
+					judul_galang_dana: judulGalangDana,
 					waktu_galang_dana: waktuBerakhir,
 					deskripsi_galang_dana: deskripsi,
 					dana_yang_dibutuhkan: kebutuhanDana,
