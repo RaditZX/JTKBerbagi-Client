@@ -266,9 +266,9 @@ function FormulirNonBeasiswa() {
 	const formPersyaratanBencana = () => {
 		return (
 			<Box sx={{ minWidth: '50%', display: 'flex', flexDirection: 'column' }}>
-				<Typography variant='body1' sx={{ mt: 2, color: '#636E72', fontWeight: 'bold' }}>Riwayat Dampak Bencana</Typography>
+				<Typography variant='body1' sx={{ mt: 2, color: '#636E72', fontWeight: 'bold' }}>Foto Bukti Butuh Bantuan</Typography>
 				<TextField type="file" variant="outlined" size="small" onChange={(val) => { handleDokumenBantuanChange(val.target.value) }}></TextField>
-				<Typography variant="caption" sx={{ color: 'red' }}>*Gambar barang/bangunan yang terkena dampak bencana</Typography>
+				{/* <Typography variant="caption" sx={{ color: 'red' }}>*Gambar barang/bangunan yang terkena dampak bencana</Typography> */}
 			</Box>
 		)
 	}
