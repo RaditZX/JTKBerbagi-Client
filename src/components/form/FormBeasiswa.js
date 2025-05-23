@@ -218,7 +218,8 @@ function FormulirBeasiswa() {
 				<Box sx={{ display: 'flex', flexDirection: 'column', mt: 4 }}>
 					<Typography variant='h3' sx={{ fontWeight: 'bold' }}>Identitas Calon Penerima Beasiswa</Typography>
 					<Typography variant='body1' nama='nama' sx={{ mt: 3, color: '#636E72', fontWeight: 'bold' }}>Nama Mahasiswa</Typography>
-					<TextField variant="outlined" size="small" label='cth: John Doe' onChange={(val) => { handleNamaMahasiswaChange(val.target.value) }}></TextField>
+					{/* <TextField variant="outlined" size="small" label='cth: John Doe' onChange={(val) => { handleNamaMahasiswaChange(val.target.value) }}></TextField> */}
+					<AutoComplete onChange={handleNamaMahasiswaChange} placeholder='cth: Hasbi' textFieldLabel='cth: Hasbi' tableName='mahasiswa' columnName='nama' suggestionDisplayField="value" suggestionValueField="value"/>
 					<Typography variant='body1' sx={{ mt: 2, color: '#636E72', fontWeight: 'bold' }}>Nomor Induk Mahasiswa</Typography>
 					{/* <TextField variant="outlined" size="small" label='Pilih NIM' onChange={(val) => { handleNimMahasiswaChange(val.target.value) }}></TextField> */}
 					<AutoComplete onChange={handleNimMahasiswaChange} placeholder='cth: 231511000' textFieldLabel='cth: 231511000' tableName='mahasiswa' columnName='nim'/>

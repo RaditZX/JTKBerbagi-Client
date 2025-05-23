@@ -453,7 +453,8 @@ function Dashboard() {
 							<Box sx={{ pt: 1, display: 'flex', width: '100%' }}>
 								<Box>
 									<Typography>Nama</Typography>
-									<TextField size='small' variant='outlined' label='cth: Hasbi' sx={{width: '100%'}} onChange={(val) => {handleNamaPenanggungJawabChange(val.target.value)}}/>
+									{/* <TextField size='small' variant='outlined' label='cth: Hasbi' sx={{width: '100%'}} onChange={(val) => {handleNamaPenanggungJawabChange(val.target.value)}}/> */}
+									<AutoComplete onChange={handleNamaPenanggungJawabChange} placeholder='cth: Hasbi' textFieldLabel='cth: Hasbi' tableName='civitas_akademika' columnName='nama' suggestionDisplayField='label' suggestionValueField='label'/>
 								</Box>
 								<Box sx={{ ml: 2 }}>
 									<Typography>NIM/NIP</Typography>
@@ -472,7 +473,8 @@ function Dashboard() {
 							<Box sx={{ display: 'flex', mt: 1 }}>
 								<Box>
 									<Typography>Nama</Typography>
-									<TextField size='small' variant='outlined' label='cth: John Doe' sx={{ width: '100%' }} onChange={(val) => {handleNamaPenerimaChange(val.target.value)}}/>
+									{/* <TextField size='small' variant='outlined' label='cth: John Doe' sx={{ width: '100%' }} onChange={(val) => {handleNamaPenerimaChange(val.target.value)}}/> */}
+									<AutoComplete onChange={handleNamaPenerimaChange} placeholder='cth: Hasbi' textFieldLabel='cth: Hasbi' tableName='civitas_akademika' columnName='nama' suggestionDisplayField='label' suggestionValueField='label'/>
 								</Box>
 								<Box sx={{ml: 2}}>
 									<Typography>NIM/NIP</Typography>

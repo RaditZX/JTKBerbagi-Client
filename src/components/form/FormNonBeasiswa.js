@@ -170,7 +170,8 @@ function FormulirNonBeasiswa() {
 				<Box sx={{ minWidth: '50%', display: 'flex', flexDirection: 'column', mt: 4 }}>
 					<Typography variant='h3' sx={{ fontWeight: 'bold' }}>Identitas Penanggung Jawab</Typography>
 					<Typography variant='body1' sx={{ mt: 3, color: '#636E72', fontWeight: 'bold' }} >Nama Penanggung Jawab</Typography>
-					<TextField variant="outlined" size="small" label='cth: John Doe' onChange={(val) => { handleNamaPenanggungJawabChange(val.target.value) }}></TextField>
+					{/* <TextField variant="outlined" size="small" label='cth: John Doe' onChange={(val) => { handleNamaPenanggungJawabChange(val.target.value) }}></TextField> */}
+					<AutoComplete onChange={handleNamaPenanggungJawabChange} placeholder='cth: John Doe' textFieldLabel='cth: John' tableName='civitas_akademika' columnName='nama' suggestionDisplayField="value" suggestionValueField="value"/>
 					<Typography variant='body1' sx={{ mt: 2, color: '#636E72', fontWeight: 'bold' }}>NIM/NIP</Typography>
 					{/* <TextField variant="outlined" size="small" label='Pilih NIM' onChange={(val) => { handleNoIdentitasPenanggungJawabChange(val.target.value) }}></TextField> */}
 					<AutoComplete onChange={handleNoIdentitasPenanggungJawabChange} placeholder='cth: 231511000' textFieldLabel='cth: 231511000' tableName='civitas_akademika' columnName='nomor_induk'/>
@@ -244,7 +245,8 @@ function FormulirNonBeasiswa() {
 						}
 					</TextField>
 					<Typography variant='body1' sx={{ mt: 2, color: '#636E72', fontWeight: 'bold' }}>Nama Penerima</Typography>
-					<TextField variant="outlined" size="small" label='cth: John Doe' onChange={(val) => { handleNamaPenerimaChange(val.target.value) }}></TextField>
+					{/* <TextField variant="outlined" size="small" label='cth: John Doe' onChange={(val) => { handleNamaPenerimaChange(val.target.value) }}></TextField> */}
+					<AutoComplete onChange={handleNamaPenerimaChange} placeholder='cth: John Doe' textFieldLabel='cth: John Doe' tableName='civitas_akademika' columnName='nama' suggestionDisplayField="value" suggestionValueField="value"/>
 					<Typography variant='body1' sx={{ mt: 2, color: '#636E72', fontWeight: 'bold' }}>NIM/NIP</Typography>
 					{/* <TextField variant="outlined" size="small" label='Pilih NIM' onChange={(val) => { handleNoIdentitasPenerimaChange(val.target.value) }}></TextField> */}
 					<AutoComplete onChange={handleNoIdentitasPenerimaChange} placeholder='cth: 231511000' textFieldLabel='cth: 231511000' tableName='civitas_akademika' columnName='nomor_induk'/>
