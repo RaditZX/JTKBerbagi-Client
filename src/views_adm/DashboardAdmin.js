@@ -151,6 +151,17 @@ function Dashboard() {
 	const handleCloseModalGalangDana = () => setOpenModalGalangDana(false);
 	const handleCloseModal = () => setOpenModal(false);
 
+	const handleDownloadTemplate = () => {
+		const templateUrl = '../templates/import.xlsx';
+	
+		const link = document.createElement('a');
+		link.href = templateUrl;
+		link.download = 'import.xlsx';
+		document.body.appendChild(link);
+		link.click();
+		document.body.removeChild(link);
+	};
+
 	const { getRootProps, getInputProps, isDragActive } = useDropzone({
 		accept: {
 		'application/vnd.ms-excel': ['.xls'],
@@ -564,11 +575,19 @@ function Dashboard() {
 								}}
 							>
 								<Button
+									variant="outlined"
+									startIcon={<DownloadIcon />}
+									onClick={handleDownloadTemplate}
+									sx={{ mr: 'auto' }}
+								>
+									Download Template
+								</Button>
+								<Button
 								variant="contained"
 								onClick={importDataCivitasAkademika}
 								disabled={!uploadedFile || isUploading}
 								startIcon={isUploading && <CircularProgress size={20} />}
-								sx={{ minWidth: 100 }}
+								sx={{ minWidth: 100, ml: 1 }}
 								>
 								{isUploading ? 'Uploading...' : 'Submit'}
 								</Button>
