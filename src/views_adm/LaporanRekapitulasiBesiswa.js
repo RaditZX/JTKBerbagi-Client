@@ -108,8 +108,12 @@ function LaporanRekapitulasiBeasiswa() {
 				})
 				.then((response) => response.json())
 				.then((data) => {
-					console.log(data.data[0].penggalangan_dana_id)
-					setId(data.data[0].penggalangan_dana_id)
+					console.log("Response getAllPenggalanganDana:", data);
+					if (data.data && Array.isArray(data.data) && data.data.length > 0) {
+						setId(data.data[0].penggalangan_dana_id);
+					} else {
+						console.error("Data penggalangan dana kosong atau tidak sesuai:", data);
+					}
 				})
 		}
 		getAllPenggalanganDana()
