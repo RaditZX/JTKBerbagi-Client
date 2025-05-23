@@ -7,6 +7,8 @@ import TimelineContent from '@mui/lab/TimelineContent';
 import TimelineDot from '@mui/lab/TimelineDot';
 import { useState } from "react";
 
+import AutoComplete from "../molekul/autocomplete/AutoComplete";
+
 function FormulirNonBeasiswa() {
 
 	const [namaPenanggungJawab, setNamaPenanggungJawab] = useState('');
@@ -170,7 +172,8 @@ function FormulirNonBeasiswa() {
 					<Typography variant='body1' sx={{ mt: 3, color: '#636E72', fontWeight: 'bold' }} >Nama Penanggung Jawab</Typography>
 					<TextField variant="outlined" size="small" label='cth: John Doe' onChange={(val) => { handleNamaPenanggungJawabChange(val.target.value) }}></TextField>
 					<Typography variant='body1' sx={{ mt: 2, color: '#636E72', fontWeight: 'bold' }}>NIM/NIP</Typography>
-					<TextField variant="outlined" size="small" label='Pilih NIM' onChange={(val) => { handleNoIdentitasPenanggungJawabChange(val.target.value) }}></TextField>
+					{/* <TextField variant="outlined" size="small" label='Pilih NIM' onChange={(val) => { handleNoIdentitasPenanggungJawabChange(val.target.value) }}></TextField> */}
+					<AutoComplete onChange={handleNoIdentitasPenanggungJawabChange} placeholder='cth: 231511000' textFieldLabel='cth: 231511000' tableName='civitas_akademika' columnName='nomor_induk'/>
 					<Typography variant='body1' sx={{ mt: 2, color: '#636E72', fontWeight: 'bold' }}>Nomor Telepon</Typography>
 					<TextField variant="outlined" size="small" label='cth: 082121445524' onChange={(val) => { handleNoTeleponPenanggungJawabChange(val.target.value) }}></TextField>
 					<div>
@@ -243,7 +246,8 @@ function FormulirNonBeasiswa() {
 					<Typography variant='body1' sx={{ mt: 2, color: '#636E72', fontWeight: 'bold' }}>Nama Penerima</Typography>
 					<TextField variant="outlined" size="small" label='cth: John Doe' onChange={(val) => { handleNamaPenerimaChange(val.target.value) }}></TextField>
 					<Typography variant='body1' sx={{ mt: 2, color: '#636E72', fontWeight: 'bold' }}>NIM/NIP</Typography>
-					<TextField variant="outlined" size="small" label='Pilih NIM' onChange={(val) => { handleNoIdentitasPenerimaChange(val.target.value) }}></TextField>
+					{/* <TextField variant="outlined" size="small" label='Pilih NIM' onChange={(val) => { handleNoIdentitasPenerimaChange(val.target.value) }}></TextField> */}
+					<AutoComplete onChange={handleNoIdentitasPenerimaChange} placeholder='cth: 231511000' textFieldLabel='cth: 231511000' tableName='civitas_akademika' columnName='nomor_induk'/>
 					<Typography variant='body1' sx={{ mt: 2, color: '#636E72', fontWeight: 'bold' }}>Nomor Telepon</Typography>
 					<TextField variant="outlined" size="small" label='cth: 082121445524' onChange={(val) => { handleNoTeleponPenerimaChange(val.target.value) }}></TextField>
 					<div>

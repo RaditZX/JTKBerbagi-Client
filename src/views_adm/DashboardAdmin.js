@@ -13,6 +13,8 @@ import Modal from '@mui/material/Modal';
 import TextField from '@mui/material/TextField';
 import Divider from '@mui/material/Divider';
 import { useLocation, Link } from 'react-router-dom';
+
+import AutoComplete from '../components/molekul/autocomplete/AutoComplete';
 // import Item from '@mui/material';
 
 
@@ -455,7 +457,8 @@ function Dashboard() {
 								</Box>
 								<Box sx={{ ml: 2 }}>
 									<Typography>NIM/NIP</Typography>
-									<TextField size='small' variant='outlined' label='cth: 081424001' sx={{width: '100%'}} onChange={(val) => {handleNomorIndukPenanggungJawabChange(val.target.value)}}/>
+									{/* <TextField size='small' variant='outlined' label='cth: 081424001' sx={{width: '100%'}} onChange={(val) => {handleNomorIndukPenanggungJawabChange(val.target.value)}}/> */}
+									<AutoComplete onChange={handleNomorIndukPenanggungJawabChange} placeholder='cth: 191524024' textFieldLabel='cth: 191524024' tableName='civitas_akademika' columnName='nomor_induk'/>
 								</Box>
 								<Box sx={{ ml: 2 }}>
 									<Typography>No Telepon</Typography>
@@ -473,7 +476,8 @@ function Dashboard() {
 								</Box>
 								<Box sx={{ml: 2}}>
 									<Typography>NIM/NIP</Typography>
-									<TextField size='small' variant='outlined' label='cth: 191524024' sx={{ width: '100%' }} onChange={(val) => {handleNomorIndukPenerimaChange(val.target.value)}}/>
+									{/* <TextField size='small' variant='outlined' label='cth: 191524024' sx={{ width: '100%' }} onChange={(val) => {handleNomorIndukPenerimaChange(val.target.value)}}/> */}
+									<AutoComplete onChange={handleNomorIndukPenerimaChange} placeholder='cth: 231511000' textFieldLabel='cth: 231511000' tableName='civitas_akademika' columnName='nomor_induk'/>	
 								</Box>
 								<Box sx={{ml: 2}}>
 									<Typography>No Telepon</Typography>
