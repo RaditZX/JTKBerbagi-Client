@@ -48,7 +48,7 @@ const getAutocompleteOptions = async (term, tableName, columnName) => {
 
 
     const AutoComplete = ({
-        initialValue = "",
+        initialValue = '',
         onChange, 
         onSelection,
         textFieldLabel = "cth: ", 
@@ -112,7 +112,8 @@ const getAutocompleteOptions = async (term, tableName, columnName) => {
             const newValue = event.target.value;
             setInputValue(newValue);
             if (onChange) {
-                onChange(event); 
+                const syntheticEvent = newValue
+                onChange(syntheticEvent); 
             }
         };
 
