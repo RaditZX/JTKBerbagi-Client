@@ -193,7 +193,18 @@ function CalonPenerimaBeasiswa() {
 			label: 'Sangat Baik',
 			value: 'SangatBaik'
 		}
-	]
+	];
+	
+	const mapPenilaianEsai = (value) => {
+    const mapping = {
+      0: 'Kurang',    
+      1: 'Cukup',     
+      2: 'Baik',      
+      3: 'SangatBaik',
+    };
+    return mapping[value] || null;
+	};
+
 	const headers = [
 		{ title: 'NIM', id: 'nim', parentId: 'mahasiswa' },
 		{ title: 'Nama', id: 'nama', parentId: 'mahasiswa' },
@@ -321,14 +332,25 @@ function CalonPenerimaBeasiswa() {
 											{Object.entries(headers).map(([key, val]) => (
 												<StyledTableCell sx={{ textAlign: 'center' }}>{
 													val.id === 'penilaian_esai' ?
-														<TextField select variant="outlined" size="small" label='Masukkan nilai' sx={{ width: 150 }} onChange={(val) => { createPenilaianEsai(row.bantuan_dana_beasiswa_id, val.target.value) }}>
-															{
-																nilaiEsai.map((option) => (
-																	<MenuItem key={option.value} value={option.value}>
-																		{option.label}
-																	</MenuItem>
-																))
-															}
+														<TextField
+														select
+														variant="outlined"
+														size="small"
+														label={
+														row.penilaian_esai != null
+															? (mapPenilaianEsai(row.penilaian_esai)
+																? nilaiEsai.find((option) => option.value === mapPenilaianEsai(row.penilaian_esai))?.label || "Nilai Tidak Diketahui"
+																: "Nilai Tidak Diketahui")
+															: "Masukkan nilai"
+														}
+														sx={{ width: 150 }}
+														onChange={(val) => { createPenilaianEsai(row.bantuan_dana_beasiswa_id, val.target.value) }}
+													>
+														{nilaiEsai.map((option) => (
+														<MenuItem key={option.value} value={option.value}>
+															{option.label}
+														</MenuItem>
+														))}
 														</TextField>
 														:
 														val.id === 'kuitansi_pembayaran_ukt' ?
