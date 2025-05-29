@@ -89,8 +89,8 @@ function LaporanRekapitulasiBeasiswa() {
         setBatch(event.target.value);
     };
 
-    const handleOpenModal = (student = { mahasiswa: { nim: '2345678901', nama: 'Hekal' } }) => {
-        setSelectedStudent(student);
+    const handleOpenModal = () => {
+        setSelectedStudent();
         setOpenModal(true);
     };
 
