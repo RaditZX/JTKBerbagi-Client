@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Typography,
+  TextField,
   Container,
   Card,
   CardContent,
@@ -13,6 +14,7 @@ import {
   stepConnectorClasses,
   Snackbar,
   Alert,
+  CircularProgress,
   Dialog,
   DialogTitle,
   DialogContent,
@@ -85,10 +87,45 @@ function FormulirDonasi() {
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [snackbarSeverity, setSnackbarSeverity] = useState("success");
+  const [isLoading, setIsLoading] = useState(false);
+  const [paymentData, setPaymentData] = useState(null);
   const [openConfirmBack, setOpenConfirmBack] = useState(false);
 
   const MIN_DONASI = 10000;
   const MAX_DONASI = 100000000;
+  const currentDate = new Date();
+  const deadline = new Date(currentDate);
+  deadline.setDate(currentDate.getDate() + 2);
+  const deadlineString = `${deadline.getDate()} ${deadline.toLocaleString(
+    "default",
+    { month: "long" }
+  )} ${deadline.getFullYear()} - ${deadline.toLocaleTimeString([], {
+    hour: "2-digit",
+    minute: "2-digit",
+  })}`;
+
+  useEffect(() => {
+    const script = document.createElement("script");
+    script.src = "https://app.sandbox.midtrans.com/snap/snap.js";
+    script.setAttribute(
+      "data-client-key",
+      process.env.REACT_APP_MIDTRANS_CLIENT_KEY || "SB-Mid-client-QHKjxlLz91qK4Cg6"
+    );
+    document.body.appendChild(script);
+    return () => {
+      document.body.removeChild(script);
+    };
+  }, []);
+
+  const resetForm = () => {
+    setStep(0);
+    setFormData({
+      namaDonatur: "",
+      noTelepon: "",
+      nominalDonasi: "",
+    });
+    setPaymentData(null);
+  };
 
   const isStepFilled = () => {
     if (step === 0) {
@@ -347,11 +384,47 @@ function FormulirDonasi() {
         </Button>
       </CardContent>
     </Card>
-  ); 
+  );
 
   const renderDetailDonasiSection = () => (
-    <Box>
-      <Button
+    <Card
+      sx={{
+        width: "100%",
+        boxShadow: "none",
+        border: "1px solid #e0e0e0",
+        my: 3,
+      }}
+    >
+      <CardContent>
+        <Typography
+          variant="h4"
+          gutterBottom
+          sx={{ fontWeight: "bold", color: "grey.800", mb: 3 }}
+        >
+          Detail Donasi
+        </Typography>
+        <Box sx={{ "& > *": { mb: 1 } }}>
+          <Typography variant="body2">
+            <strong>Donatur:</strong> {formData.namaDonatur}
+          </Typography>
+          <Typography variant="body2">
+            <strong>Nomor Telepon:</strong> {formData.noTelepon}
+          </Typography>
+        </Box>
+        <TextField
+          label="Nominal Donasi"
+          name="nominalDonasi"
+          value={formData.nominalDonasi}
+          onChange={handleChange}
+          fullWidth
+          error={!!errors.nominalDonasi}
+          helperText={errors.nominalDonasi}
+          sx={{ mb: 2, mt: 4 }}
+          InputProps={{
+            startAdornment: <Typography sx={{ mr: 1 }}>Rp</Typography>,
+          }}
+        />
+        <Button
           variant="contained"
           fullWidth
           onClick={handleNext}
@@ -363,15 +436,16 @@ function FormulirDonasi() {
           ) : (
             "Lanjut Pembayaran"
           )}
-      </Button>
-      <Button
-        startIcon={<ArrowBackIcon />}
-        onClick={handleBackClick}
-        sx={{ mt: 2 }}
-      >
-        Kembali
-      </Button>
-    </Box>
+        </Button>
+        <Button
+          startIcon={<ArrowBackIcon />}
+          onClick={handleBackClick}
+          sx={{ mt: 2 }}
+        >
+          Kembali
+        </Button>
+      </CardContent>
+    </Card>
   );
 
   return (
@@ -431,7 +505,7 @@ function FormulirDonasi() {
           </Alert>
         </Snackbar>
 
-		<Dialog
+        <Dialog
           open={openConfirmBack}
           onClose={() => setOpenConfirmBack(false)}
         >
