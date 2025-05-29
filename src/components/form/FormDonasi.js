@@ -2,6 +2,8 @@ import { useState } from "react";
 import {
   Typography,
   Container,
+  Card,
+  CardContent,
   Box,
   Button,
   Stepper,
@@ -85,6 +87,9 @@ function FormulirDonasi() {
   const [snackbarSeverity, setSnackbarSeverity] = useState("success");
   const [openConfirmBack, setOpenConfirmBack] = useState(false);
 
+  const MIN_DONASI = 10000;
+  const MAX_DONASI = 100000000;
+
   const isStepFilled = () => {
     if (step === 0) {
       return (
@@ -97,6 +102,50 @@ function FormulirDonasi() {
       return formData.nominalDonasi && !errors.nominalDonasi;
     }
     return false;
+  };
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+
+    if (name === "namaDonatur") {
+      setErrors((prev) => ({
+        ...prev,
+        namaDonatur: value ? "" : "Nama donatur harus diisi",
+      }));
+    }
+    if (name === "noTelepon") {
+      if (!value) {
+        setErrors((prev) => ({ ...prev, noTelepon: "No telepon harus diisi" }));
+      } else if (!/^\d+$/.test(value)) {
+        setErrors((prev) => ({
+          ...prev,
+          noTelepon: "No telepon harus berupa angka",
+        }));
+      } else {
+        setErrors((prev) => ({ ...prev, noTelepon: "" }));
+      }
+    }
+    if (name === "nominalDonasi") {
+      if (!value) {
+        setErrors((prev) => ({
+          ...prev,
+          nominalDonasi: "Nominal donasi harus diisi",
+        }));
+      } else if (isNaN(value) || Number(value) < MIN_DONASI) {
+        setErrors((prev) => ({
+          ...prev,
+          nominalDonasi: `Minimal Rp${MIN_DONASI.toLocaleString()}`,
+        }));
+      } else if (Number(value) > MAX_DONASI) {
+        setErrors((prev) => ({
+          ...prev,
+          nominalDonasi: `Maksimal Rp${MAX_DONASI.toLocaleString()}`,
+        }));
+      } else {
+        setErrors((prev) => ({ ...prev, nominalDonasi: "" }));
+      }
+    }
   };
 
   const handleBackClick = () => {
@@ -126,8 +175,195 @@ function FormulirDonasi() {
     setStep((prev) => prev - 1);
   };
 
+  const handleNext = async () => {
+    let hasError = false;
+    const newErrors = {};
+
+    if (step === 0) {
+      if (!formData.namaDonatur) {
+        newErrors.namaDonatur = "Nama donatur harus diisi";
+        hasError = true;
+      }
+      if (!formData.noTelepon) {
+        newErrors.noTelepon = "No telepon harus diisi";
+        hasError = true;
+      } else if (!/^\d+$/.test(formData.noTelepon)) {
+        newErrors.noTelepon = "No telepon harus berupa angka";
+        hasError = true;
+      }
+    }
+
+    if (step === 1) {
+      const nominal = Number(formData.nominalDonasi);
+      if (!formData.nominalDonasi) {
+        newErrors.nominalDonasi = "Nominal donasi harus diisi";
+        hasError = true;
+      } else if (
+        isNaN(nominal) ||
+        nominal < MIN_DONASI ||
+        nominal > MAX_DONASI
+      ) {
+        newErrors.nominalDonasi = `Donasi antara Rp${MIN_DONASI.toLocaleString()} - Rp${MAX_DONASI.toLocaleString()}`;
+        hasError = true;
+      }
+    }
+
+    setErrors(newErrors);
+
+    if (!hasError && step === 1) {
+      try {
+        setIsLoading(true);
+        const response = await fetch(
+          "http://localhost:8000/v1/penggalangan/donasi/createDonasi",
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              id: 1,
+              nama: formData.namaDonatur,
+              nomor_telepon: formData.noTelepon,
+              nominal_donasi: Number(formData.nominalDonasi),
+            }),
+          }
+        );
+
+        const data = await response.json();
+
+        if (data.response_code !== 201) {
+          throw new Error(
+            data.response_message || "Terjadi kesalahan saat memproses donasi"
+          );
+        }
+
+        setPaymentData({
+          orderId: data.data.donasi?.nomor_referensi,
+          redirectUrl: data.data.redirect_url,
+          token: data.data.midtrans_token,
+          status: data.data.donasi?.payment_status,
+        });
+
+        setIsLoading(false);
+
+        if (data.data.midtrans_token && window.snap) {
+          console.log("Initiating Snap payment with token:", data.data.midtrans_token);
+          window.snap.pay(data.data.midtrans_token, {
+            onSuccess: (result) => {
+              console.log("onSuccess triggered:", result);
+              setPaymentData((prev) => ({ ...prev, status: 1 }));
+              setSnackbarSeverity("success");
+              setSnackbarMessage(
+                "Pembayaran berhasil! Terima kasih atas donasi Anda."
+              );
+              setOpenSnackbar(true);
+              resetForm();
+            },
+            onPending: (result) => {
+              console.log("onPending triggered:", result);
+              setPaymentData((prev) => ({ ...prev, status: 0 }));
+              setSnackbarSeverity("info");
+              setSnackbarMessage(
+                "Pembayaran masih diproses, silakan cek kembali nanti."
+              );
+              setOpenSnackbar(true);
+              resetForm();
+            },
+            onError: (result) => {
+              console.log("onError triggered:", result);
+              setSnackbarSeverity("error");
+              setSnackbarMessage("Terjadi kesalahan saat pembayaran.");
+              setOpenSnackbar(true);
+            },
+            onClose: () => {
+              console.log("onClose triggered");
+              setSnackbarSeverity("info");
+              setSnackbarMessage(
+                "Anda menutup halaman pembayaran. Silakan coba lagi."
+              );
+              setOpenSnackbar(true);
+            },
+          });
+        } else {
+          console.error("Snap.js failed to load or token missing");
+          setSnackbarSeverity("error");
+          setSnackbarMessage("Gagal memuat Snap.js. Silakan coba lagi.");
+          setOpenSnackbar(true);
+        }
+      } catch (error) {
+        console.error("Fetch error:", error);
+        setIsLoading(false);
+        setSnackbarSeverity("error");
+        setSnackbarMessage(error.message || "Terjadi kesalahan pada server");
+        setOpenSnackbar(true);
+      }
+    } else if (!hasError) {
+      setStep((prev) => prev + 1);
+    }
+  };
+
+  const renderDataDonaturSection = () => (
+    <Card
+      sx={{
+        width: "100%",
+        boxShadow: "none",
+        border: "1px solid #e0e0e0",
+        my: 3,
+      }}
+    >
+      <CardContent>
+        <Typography
+          variant="h3"
+          gutterBottom
+          sx={{ fontWeight: "bold", color: "grey.800", mb: 3 }}
+        >
+          Data Donatur
+        </Typography>
+        <TextField
+          label="Nama Donatur"
+          name="namaDonatur"
+          value={formData.namaDonatur}
+          onChange={handleChange}
+          fullWidth
+          error={!!errors.namaDonatur}
+          helperText={errors.namaDonatur}
+          sx={{ mb: 2 }}
+        />
+        <TextField
+          label="No Telepon"
+          name="noTelepon"
+          value={formData.noTelepon}
+          onChange={handleChange}
+          fullWidth
+          error={!!errors.noTelepon}
+          helperText={errors.noTelepon}
+          sx={{ mb: 2 }}
+        />
+        <Button
+          variant="contained"
+          fullWidth
+          sx={{ mt: 2 }}
+          onClick={handleNext}
+        >
+          Selanjutnya
+        </Button>
+      </CardContent>
+    </Card>
+  ); 
+
   const renderDetailDonasiSection = () => (
     <Box>
+      <Button
+          variant="contained"
+          fullWidth
+          onClick={handleNext}
+          disabled={isLoading}
+          sx={{ mt: 2 }}
+        >
+          {isLoading ? (
+            <CircularProgress size={24} color="inherit" />
+          ) : (
+            "Lanjut Pembayaran"
+          )}
+      </Button>
       <Button
         startIcon={<ArrowBackIcon />}
         onClick={handleBackClick}
