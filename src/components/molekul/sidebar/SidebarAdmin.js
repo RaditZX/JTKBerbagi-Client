@@ -92,6 +92,13 @@ const Sidebar = (props) => {
                     >
                       <Typography sx={{ ml: 3 }}>Non Beasiswa</Typography>
                     </MenuItem>
+                    <MenuItem
+                      onClick={() =>
+                        navigate("/rekapitulasi-dana/evaluasi")
+                      }
+                    >
+                      <Typography sx={{ ml: 3 }}>Laporan Evaluasi Penyaluran</Typography>
+                    </MenuItem>
                   </Box>
                 )}
             </React.Fragment>

@@ -13,6 +13,7 @@ import PenggalanganDana from "./views_user/PenggalanganDana";
 import DaftarPenggalanganDana from "./views_user/DaftarPenggalanganDana";
 import PenerimaBeasiswa from "./views_adm/PenerimaBeasiswa";
 import PenerimaNonBeasiswa from "./views_adm/PenerimaNonBeasiswa";
+import LaporanEvaluasiDana from "./views_adm/LaporanEvaluasiDana";
 import Layout from "./components/layout";
 import RekapitulasiDana from "./views_user/RekapitulasiDana";
 
@@ -69,6 +70,10 @@ function App() {
           <Route
             path="/rekapitulasi-dana/non-beasiswa"
             element={<LaporanRekapitulasiNonBeasiswa />}
+          />
+          <Route
+            path="/rekapitulasi-dana/evaluasi"
+            element={<LaporanEvaluasiDana />}
           />
           <Route
             path="/rekapitulasi-donasi"
