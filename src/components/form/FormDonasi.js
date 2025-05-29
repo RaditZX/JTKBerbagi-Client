@@ -107,7 +107,21 @@ function FormulirDonasi() {
       </Box>
 
       <Container maxWidth="sm">
-        {/* Placeholder untuk konten formulir */}
+        {step === 0 && renderDataDonaturSection()}
+        {step === 1 && renderDetailDonasiSection()}
+
+        <Snackbar
+          open={openSnackbar}
+          autoHideDuration={3000}
+          onClose={() => setOpenSnackbar(false)}
+        >
+          <Alert
+            severity={snackbarSeverity}
+            onClose={() => setOpenSnackbar(false)}
+          >
+            {snackbarMessage}
+          </Alert>
+        </Snackbar>
       </Container>
     </Box>
   );
