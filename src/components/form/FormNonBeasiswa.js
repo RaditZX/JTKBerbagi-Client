@@ -152,15 +152,15 @@ function FormulirNonBeasiswa() {
 						}}
 					>
 						<TimelineItem>
-							<TimelineSeparator>
+							{/* <TimelineSeparator>
 								<TimelineDot color="error" variant="outlined" />
 								<TimelineConnector />
-							</TimelineSeparator>
+							</TimelineSeparator> */}
 							<TimelineContent sx={{ width: 'max-content' }}><Typography variant='h3' sx={{ fontWeight: 'bold' }}>Pengajuan Bantuan Dana</Typography></TimelineContent>
 						</TimelineItem>
 						<TimelineItem>
 							<TimelineSeparator>
-								<TimelineDot />
+								<TimelineDot color="info" variant="outlined"/>
 								<TimelineConnector />
 							</TimelineSeparator>
 							<TimelineContent variant='h4' sx={{ width: 'max-content', fontWeight: '0' }}>Penanggung Jawab</TimelineContent>
@@ -216,10 +216,10 @@ function FormulirNonBeasiswa() {
 						}}
 					>
 						<TimelineItem>
-							<TimelineSeparator>
+							{/* <TimelineSeparator>
 								<TimelineDot color="error" variant="outlined" />
 								<TimelineConnector />
-							</TimelineSeparator>
+							</TimelineSeparator> */}
 							<TimelineContent sx={{ width: 'max-content' }}><Typography variant='h3' sx={{ fontWeight: 'bold' }}>Pengajuan Bantuan Dana</Typography></TimelineContent>
 						</TimelineItem>
 						<TimelineItem>
@@ -231,7 +231,7 @@ function FormulirNonBeasiswa() {
 						</TimelineItem>
 						<TimelineItem>
 							<TimelineSeparator>
-								<TimelineDot />
+								<TimelineDot color="info" variant="outlined"/>
 								<TimelineConnector />
 							</TimelineSeparator>
 							<TimelineContent variant='h4' sx={{ width: 'max-content', fontWeight: '0' }}>Calon Penerima Bantuan Dana</TimelineContent>
@@ -310,10 +310,10 @@ function FormulirNonBeasiswa() {
 						}}
 					>
 						<TimelineItem>
-							<TimelineSeparator>
+							{/* <TimelineSeparator>
 								<TimelineDot color="error" variant="outlined" />
 								<TimelineConnector />
-							</TimelineSeparator>
+							</TimelineSeparator> */}
 							<TimelineContent sx={{ width: 'max-content' }}><Typography variant='h3' sx={{ fontWeight: 'bold' }}>Pengajuan Bantuan Dana</Typography></TimelineContent>
 						</TimelineItem>
 						<TimelineItem>
@@ -332,7 +332,7 @@ function FormulirNonBeasiswa() {
 						</TimelineItem>
 						<TimelineItem>
 							<TimelineSeparator>
-								<TimelineDot />
+								<TimelineDot color="info" variant="outlined"/>
 								<TimelineConnector />
 							</TimelineSeparator>
 							<TimelineContent variant='h4'>Persyaratan</TimelineContent>
@@ -376,10 +376,10 @@ function FormulirNonBeasiswa() {
 						}}
 					>
 						<TimelineItem>
-							<TimelineSeparator>
+							{/* <TimelineSeparator>
 								<TimelineDot color="error" variant="outlined" />
 								<TimelineConnector />
-							</TimelineSeparator>
+							</TimelineSeparator> */}
 							<TimelineContent sx={{ width: 'max-content' }}><Typography variant='h3' sx={{ fontWeight: 'bold' }}>Pengajuan Bantuan Dana</Typography></TimelineContent>
 						</TimelineItem>
 						<TimelineItem>
@@ -406,7 +406,7 @@ function FormulirNonBeasiswa() {
 						</TimelineItem>
 						<TimelineItem>
 							<TimelineSeparator>
-								<TimelineDot />
+								<TimelineDot color="info" variant="outlined"/>
 							</TimelineSeparator>
 							<TimelineContent variant='h4'>Informasi Lainnya</TimelineContent>
 						</TimelineItem>
