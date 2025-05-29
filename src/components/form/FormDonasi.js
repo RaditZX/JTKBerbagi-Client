@@ -3,13 +3,22 @@ import {
   Typography,
   Container,
   Box,
+  Button,
   Stepper,
   Step,
   StepLabel,
   StepConnector,
   stepConnectorClasses,
+  Snackbar,
+  Alert,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
 } from "@mui/material";
 import { styled } from "@mui/system";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
 const CustomStepIconRoot = styled("div")(({ theme, ownerState }) => ({
   width: 32,
@@ -65,6 +74,69 @@ const steps = ["Data Donatur", "Detail Donasi"];
 
 function FormulirDonasi() {
   const [step, setStep] = useState(0);
+  const [formData, setFormData] = useState({
+    namaDonatur: "",
+    noTelepon: "",
+    nominalDonasi: "",
+  });
+  const [errors, setErrors] = useState({});
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [snackbarSeverity, setSnackbarSeverity] = useState("success");
+  const [openConfirmBack, setOpenConfirmBack] = useState(false);
+
+  const isStepFilled = () => {
+    if (step === 0) {
+      return (
+        formData.namaDonatur &&
+        formData.noTelepon &&
+        !errors.namaDonatur &&
+        !errors.noTelepon
+      );
+    } else if (step === 1) {
+      return formData.nominalDonasi && !errors.nominalDonasi;
+    }
+    return false;
+  };
+
+  const handleBackClick = () => {
+    if (isStepFilled()) {
+      setOpenConfirmBack(true);
+    } else {
+      setStep((prev) => prev - 1);
+    }
+  };
+
+  const confirmBack = (discardData = false) => {
+    setOpenConfirmBack(false);
+    if (discardData) {
+      if (step === 0) {
+        setFormData((prev) => ({
+          ...prev,
+          namaDonatur: "",
+          noTelepon: "",
+        }));
+      } else if (step === 1) {
+        setFormData((prev) => ({
+          ...prev,
+          nominalDonasi: "",
+        }));
+      }
+    }
+    setStep((prev) => prev - 1);
+  };
+
+  const renderDetailDonasiSection = () => (
+    <Box>
+      <Button
+        startIcon={<ArrowBackIcon />}
+        onClick={handleBackClick}
+        sx={{ mt: 2 }}
+      >
+        Kembali
+      </Button>
+    </Box>
+  );
 
   return (
     <Box sx={{ width: "100%", backgroundColor: "#fff", pt: 3 }}>
@@ -122,6 +194,29 @@ function FormulirDonasi() {
             {snackbarMessage}
           </Alert>
         </Snackbar>
+
+		<Dialog
+          open={openConfirmBack}
+          onClose={() => setOpenConfirmBack(false)}
+        >
+          <DialogTitle>Konfirmasi</DialogTitle>
+          <DialogContent>
+            <DialogContentText>
+              {step === 0
+                ? "Data nama dan telepon yang telah diisi akan dihapus. Yakin ingin kembali?"
+                : "Data nominal yang telah diisi akan dihapus. Yakin ingin kembali?"}
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setOpenConfirmBack(false)}>Batal</Button>
+            <Button onClick={() => confirmBack(true)} color="error">
+              Hapus Data & Kembali
+            </Button>
+            <Button onClick={() => confirmBack(false)} color="primary">
+              Simpan Data & Kembali
+            </Button>
+          </DialogActions>
+        </Dialog>
       </Container>
     </Box>
   );
