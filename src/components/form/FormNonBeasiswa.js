@@ -28,19 +28,39 @@ function FormulirNonBeasiswa() {
 	const [nomorRekening, setNomorRekening] = useState('');
 
 	const handleNamaPenanggungJawabChange = (val) => {
-		setNamaPenanggungJawab(val)
+		if (typeof val === 'object' && val !== null) {
+			setNamaPenanggungJawab(val.nama || '');
+			setNoIdentitasPenanggungJawab(val.nomor_induk || '');
+		} else {
+			setNamaPenanggungJawab(val); // allow manual input
+		}
 	}
 	const handleNoIdentitasPenanggungJawabChange = (val) => {
-		setNoIdentitasPenanggungJawab(val)
+		if (typeof val === 'object' && val !== null) {
+			setNoIdentitasPenanggungJawab(val.nomor_induk || '');
+			setNamaPenanggungJawab(val.nama || '');
+		} else {
+			setNoIdentitasPenanggungJawab(val); // allow manual input
+		}
 	}
 	const handleNoTeleponPenanggungJawabChange = (val) => {
 		setNoTeleponPenanggungJawab(val)
 	}
 	const handleNamaPenerimaChange = (val) => {
-		setNamaPenerima(val)
+		if (typeof val === 'object' && val !== null) {
+			setNamaPenerima(val.nama || '');
+			setNoIdentitasPenerima(val.nomor_induk || '');
+		} else {
+			setNamaPenerima(val); // allow manual input
+		}
 	}
 	const handleNoIdentitasPenerimaChange = (val) => {
-		setNoIdentitasPenerima(val)
+		if (typeof val === 'object' && val !== null) {
+			setNoIdentitasPenerima(val.nomor_induk || '');
+			setNamaPenerima(val.nama || '');
+		} else {
+			setNoIdentitasPenerima(val.nomor_induk || '');
+		}
 	}
 	const handleNoTeleponPenerimaChange = (val) => {
 		setNoTeleponPenerima(val)
@@ -171,10 +191,10 @@ function FormulirNonBeasiswa() {
 					<Typography variant='h3' sx={{ fontWeight: 'bold' }}>Identitas Penanggung Jawab</Typography>
 					<Typography variant='body1' sx={{ mt: 3, color: '#636E72', fontWeight: 'bold' }} >Nama Penanggung Jawab</Typography>
 					{/* <TextField variant="outlined" size="small" label='cth: John Doe' onChange={(val) => { handleNamaPenanggungJawabChange(val.target.value) }}></TextField> */}
-					<AutoComplete onChange={handleNamaPenanggungJawabChange} placeholder='cth: John Doe' textFieldLabel='cth: John' tableName='civitas_akademika' columnName='nama' suggestionDisplayField="value" suggestionValueField="value"/>
+					<AutoComplete onChange={handleNamaPenanggungJawabChange} placeholder='cth: John Doe' textFieldLabel='cth: John' tableName='civitas_akademika' columnName='nama' suggestionDisplayField="nama" suggestionValueField="nama" value={namaPenanggungJawab}/>
 					<Typography variant='body1' sx={{ mt: 2, color: '#636E72', fontWeight: 'bold' }}>NIM/NIP</Typography>
 					{/* <TextField variant="outlined" size="small" label='Pilih NIM' onChange={(val) => { handleNoIdentitasPenanggungJawabChange(val.target.value) }}></TextField> */}
-					<AutoComplete onChange={handleNoIdentitasPenanggungJawabChange} placeholder='cth: 231511000' textFieldLabel='cth: 231511000' tableName='civitas_akademika' columnName='nomor_induk'/>
+					<AutoComplete onChange={handleNoIdentitasPenanggungJawabChange} placeholder='cth: 231511000' textFieldLabel='cth: 231511000' tableName='civitas_akademika' columnName='nomor_induk' suggestionDisplayField="nomor_induk" suggestionValueField="nomor_induk" value={noIdentitasPenanggungJawab}/>
 					<Typography variant='body1' sx={{ mt: 2, color: '#636E72', fontWeight: 'bold' }}>Nomor Telepon</Typography>
 					<TextField variant="outlined" size="small" label='cth: 082121445524' onChange={(val) => { handleNoTeleponPenanggungJawabChange(val.target.value) }}></TextField>
 					<div>
@@ -246,10 +266,10 @@ function FormulirNonBeasiswa() {
 					</TextField>
 					<Typography variant='body1' sx={{ mt: 2, color: '#636E72', fontWeight: 'bold' }}>Nama Penerima</Typography>
 					{/* <TextField variant="outlined" size="small" label='cth: John Doe' onChange={(val) => { handleNamaPenerimaChange(val.target.value) }}></TextField> */}
-					<AutoComplete onChange={handleNamaPenerimaChange} placeholder='cth: John Doe' textFieldLabel='cth: John Doe' tableName='civitas_akademika' columnName='nama' suggestionDisplayField="value" suggestionValueField="value"/>
+					<AutoComplete onChange={handleNamaPenerimaChange} placeholder='cth: John Doe' textFieldLabel='cth: John Doe' tableName='civitas_akademika' columnName='nama' suggestionDisplayField="nama" suggestionValueField="nama" value={namaPenerima}/>
 					<Typography variant='body1' sx={{ mt: 2, color: '#636E72', fontWeight: 'bold' }}>NIM/NIP</Typography>
 					{/* <TextField variant="outlined" size="small" label='Pilih NIM' onChange={(val) => { handleNoIdentitasPenerimaChange(val.target.value) }}></TextField> */}
-					<AutoComplete onChange={handleNoIdentitasPenerimaChange} placeholder='cth: 231511000' textFieldLabel='cth: 231511000' tableName='civitas_akademika' columnName='nomor_induk'/>
+					<AutoComplete onChange={handleNoIdentitasPenerimaChange} placeholder='cth: 231511000' textFieldLabel='cth: 231511000' tableName='civitas_akademika' columnName='nomor_induk' suggestionDisplayField="nomor_induk" suggestionValueField="nomor_induk" value={noIdentitasPenerima}/>
 					<Typography variant='body1' sx={{ mt: 2, color: '#636E72', fontWeight: 'bold' }}>Nomor Telepon</Typography>
 					<TextField variant="outlined" size="small" label='cth: 082121445524' onChange={(val) => { handleNoTeleponPenerimaChange(val.target.value) }}></TextField>
 					<div>

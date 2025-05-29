@@ -12,11 +12,20 @@ import AutoComplete from "../molekul/autocomplete/AutoComplete";
 function FormulirBeasiswa() {
 	const [namaMahasiswa, setNamaMahasiswa] = useState('');
 	const handleNamaMahasiswaChange = (val) => {
-		setNamaMahasiswa(val)
+		if (typeof val === 'object' && val !== null) {
+			setNamaMahasiswa(val.nama || '');
+			setNimMahasiswa(val.nim || '');
+		} else {
+			setNamaMahasiswa(val); // allow manual input
+		}
 	}
 	const [nimMahasiswa, setNimMahasiswa] = useState('');
 	const handleNimMahasiswaChange = (val) => {
-		setNimMahasiswa(val)
+		if (typeof val === 'object' && val !== null) {
+			setNimMahasiswa(val.nim || '');
+			setNamaMahasiswa(val.nama || '');
+		} else {
+			setNimMahasiswa(val || '');		}
 	}
 	const [noTelepon, setNoTelepon] = useState('');
 	const handleNoTeleponChange = (val) => {
@@ -219,10 +228,10 @@ function FormulirBeasiswa() {
 					<Typography variant='h3' sx={{ fontWeight: 'bold' }}>Identitas Calon Penerima Beasiswa</Typography>
 					<Typography variant='body1' nama='nama' sx={{ mt: 3, color: '#636E72', fontWeight: 'bold' }}>Nama Mahasiswa</Typography>
 					{/* <TextField variant="outlined" size="small" label='cth: John Doe' onChange={(val) => { handleNamaMahasiswaChange(val.target.value) }}></TextField> */}
-					<AutoComplete onChange={handleNamaMahasiswaChange} placeholder='cth: Hasbi' textFieldLabel='cth: Hasbi' tableName='mahasiswa' columnName='nama' suggestionDisplayField="value" suggestionValueField="value"/>
+					<AutoComplete onChange={handleNamaMahasiswaChange} placeholder='cth: Hasbi' textFieldLabel='cth: Hasbi' tableName='mahasiswa' columnName='nama' suggestionDisplayField="nama" suggestionValueField="nama" value={namaMahasiswa}/>
 					<Typography variant='body1' sx={{ mt: 2, color: '#636E72', fontWeight: 'bold' }}>Nomor Induk Mahasiswa</Typography>
 					{/* <TextField variant="outlined" size="small" label='Pilih NIM' onChange={(val) => { handleNimMahasiswaChange(val.target.value) }}></TextField> */}
-					<AutoComplete onChange={handleNimMahasiswaChange} placeholder='cth: 231511000' textFieldLabel='cth: 231511000' tableName='mahasiswa' columnName='nim'/>
+					<AutoComplete onChange={handleNimMahasiswaChange} placeholder='cth: 231511000' textFieldLabel='cth: 231511000' tableName='mahasiswa' columnName='nim' suggestionDisplayField="nim" suggestionValueField="nim" value={nimMahasiswa}/>
 					<Typography variant='body1' sx={{ mt: 2, color: '#636E72', fontWeight: 'bold' }}>Nomor Telepon</Typography>
 					<TextField variant="outlined" size="small" label='cth: 082121445524' onChange={(val) => { handleNoTeleponChange(val.target.value) }}></TextField>
 					<Typography variant='body1' sx={{ mt: 2, color: '#636E72', fontWeight: 'bold' }}>Nama Pemilik Rekening</Typography>

@@ -48,16 +48,17 @@ const getAutocompleteOptions = async (term, tableName, columnName) => {
 
 
     const AutoComplete = ({
-        initialValue = '',
+        initialValue,
+        value,
         onChange, 
         onSelection,
         textFieldLabel = "cth: ", 
         placeholder = "isi disini",
         name,
-        suggestionDisplayField = "id",
+        suggestionDisplayField = "nama",
         suggestionValueField = "id", 
         tableName,
-        columnName
+        columnName,
     }) => {
         const [inputValue, setInputValue] = useState(initialValue);
         const [suggestions, setSuggestions] = useState([]);
@@ -66,25 +67,38 @@ const getAutocompleteOptions = async (term, tableName, columnName) => {
         const autocompleteRef = useRef(null);
         const [ignoreNextEffect, setIgnoreNextEffect] = useState(false);
         const ignoreNextEffectRef = useRef(false);
+        const [isFocused, setIsFocused] = useState(false);
 
 
 
-    const debouncedFetchSuggestions = useCallback(
-        debounce(async (term) => {
-            if (term && term.trim().length >= 1) {
-                setIsLoading(true);
-                const fetchedOptions = await getAutocompleteOptions(term, tableName, columnName); // <- pass additional args
-                setSuggestions(fetchedOptions);
-                setIsLoading(false);
-                setShowSuggestions(fetchedOptions.length > 0);
-            } else {
-                setSuggestions([]);
-                setShowSuggestions(false);
-                setIsLoading(false);
+        const handleFocus = () => {
+            setIsFocused(true);
+            if (inputValue && inputValue.trim().length >= 1 && suggestions.length > 0) {
+                setShowSuggestions(true);
             }
-        }, 300),
-        [tableName, columnName] 
-    );
+        };
+        
+        const handleBlur = () => {
+            setIsFocused(false);
+            setShowSuggestions(false);
+        };
+
+        const debouncedFetchSuggestions = useCallback(
+            debounce(async (term) => {
+                if (term && term.trim().length >= 1) {
+                    setIsLoading(true);
+                    const fetchedOptions = await getAutocompleteOptions(term, tableName, columnName); // <- pass additional args
+                    setSuggestions(fetchedOptions);
+                    setIsLoading(false);
+                    setShowSuggestions(fetchedOptions.length > 0);
+                } else {
+                    setSuggestions([]);
+                    setShowSuggestions(false);
+                    setIsLoading(false);
+                }
+            }, 300),
+            [tableName, columnName] 
+        );
 
 
         useEffect(() => {
@@ -95,18 +109,11 @@ const getAutocompleteOptions = async (term, tableName, columnName) => {
             debouncedFetchSuggestions(inputValue);
         }, [inputValue, debouncedFetchSuggestions]);
 
-
         useEffect(() => {
-            const handleClickOutside = (event) => {
-                if (autocompleteRef.current && !autocompleteRef.current.contains(event.target)) {
-                    setShowSuggestions(false);
-                }
-            };
-            document.addEventListener("mousedown", handleClickOutside);
-            return () => {
-                document.removeEventListener("mousedown", handleClickOutside);
-            };
-        }, []);
+            if (value !== undefined && value !== inputValue) {
+                setInputValue(value);
+            }
+        }, [value]);
 
         const handleInputChange = (event) => {
             const newValue = event.target.value;
@@ -118,13 +125,14 @@ const getAutocompleteOptions = async (term, tableName, columnName) => {
         };
 
         const handleSuggestionClick = (suggestion) => {
+            // const valueToSetInInput = String(suggestion[suggestionValueField] || suggestion.label || suggestion.id);
             const valueToSetInInput = String(suggestion[suggestionValueField] || suggestion.label || suggestion.id);
             
             ignoreNextEffectRef.current = true;
             setInputValue(valueToSetInInput);
 
             if (onChange) {
-                const syntheticEvent = valueToSetInInput;
+                const syntheticEvent = suggestion;
                 onChange(syntheticEvent);
             }
 
@@ -138,16 +146,15 @@ const getAutocompleteOptions = async (term, tableName, columnName) => {
 
 
         const handleKeyDown = (event) => {
-            if (event.key === 'Escape' || event.key === 'Enter') {
+            if (event.key === 'Escape') {
                 setShowSuggestions(false);
             }
-        };
 
-        const handleFocus = () => {
-            // Show suggestions if there's input and suggestions were previously fetched (and still in state)
-            // and the input field is not empty.
-            if (inputValue && inputValue.trim().length >= 1 && suggestions.length > 0) {
-                setShowSuggestions(true);
+            if (event.key === 'Enter') {
+                setShowSuggestions(false);
+                if (onChange) {
+                    onChange(inputValue); 
+                }
             }
         };
 
@@ -160,17 +167,18 @@ const getAutocompleteOptions = async (term, tableName, columnName) => {
                 sx={{ width: '100%' }}
                 name={name}
                 placeholder={placeholder}
-                value={inputValue}
+                value={value !== undefined ? value : inputValue}
                 onChange={handleInputChange}
                 onKeyDown={handleKeyDown}
                 onFocus={handleFocus}
+                onBlur={handleBlur}
             />
-            {isLoading && (
+            {/* {isLoading && (
                 <div className="loading-indicator" style={{ padding: '8px 0', fontSize: '0.9em', color: '#555', textAlign: 'left' }}>
                     Loading...
                 </div>
-            )}
-            {showSuggestions && suggestions.length > 0 && (
+            )} */}
+            {isFocused && showSuggestions && suggestions.length > 0 && (
                 <ul
                     className="suggestions"
                     style={{
@@ -191,15 +199,15 @@ const getAutocompleteOptions = async (term, tableName, columnName) => {
                 >
                     {suggestions.map((suggestion, index) => (
                         <li
-                            key={suggestion.id || index} 
-                            onClick={() => handleSuggestionClick(suggestion)}
+                            key={suggestion.nomor_induk || suggestion.nim || index}
+                            onMouseDown={() => handleSuggestionClick(suggestion)} // <-- use onMouseDown
                             style={{ padding: '10px', cursor: 'pointer', borderBottom: '1px solid #eee' }}
                             onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f0f0f0'}
                             onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'white'}
                             role="option"
-                            aria-selected={false} // This would be dynamically set if using keyboard navigation
+                            aria-selected={false}
                         >
-                            {suggestion[suggestionDisplayField] || suggestion.label || suggestion.id}
+                            {suggestion[suggestionDisplayField] || suggestion.nomor_induk || suggestion.nama}
                         </li>
                     ))}
                 </ul>
