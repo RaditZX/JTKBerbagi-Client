@@ -3,10 +3,14 @@ import { useLocation } from "react-router-dom";
 import {
   Typography,
   TextField,
+  TextField,
   Container,
   Card,
   CardContent,
+  Card,
+  CardContent,
   Box,
+  Button,
   Button,
   Stepper,
   Step,
@@ -21,8 +25,17 @@ import {
   DialogContent,
   DialogContentText,
   DialogActions,
+  Snackbar,
+  Alert,
+  CircularProgress,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
 } from "@mui/material";
 import { styled } from "@mui/system";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
 const CustomStepIconRoot = styled("div")(({ theme, ownerState }) => ({
@@ -514,6 +527,44 @@ function FormulirDonasi() {
       </Box>
 
       <Container maxWidth="sm">
+        {step === 0 && renderDataDonaturSection()}
+        {step === 1 && renderDetailDonasiSection()}
+
+        <Snackbar
+          open={openSnackbar}
+          autoHideDuration={3000}
+          onClose={() => setOpenSnackbar(false)}
+        >
+          <Alert
+            severity={snackbarSeverity}
+            onClose={() => setOpenSnackbar(false)}
+          >
+            {snackbarMessage}
+          </Alert>
+        </Snackbar>
+
+        <Dialog
+          open={openConfirmBack}
+          onClose={() => setOpenConfirmBack(false)}
+        >
+          <DialogTitle>Konfirmasi</DialogTitle>
+          <DialogContent>
+            <DialogContentText>
+              {step === 0
+                ? "Data nama dan telepon yang telah diisi akan dihapus. Yakin ingin kembali?"
+                : "Data nominal yang telah diisi akan dihapus. Yakin ingin kembali?"}
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setOpenConfirmBack(false)}>Batal</Button>
+            <Button onClick={() => confirmBack(true)} color="error">
+              Hapus Data & Kembali
+            </Button>
+            <Button onClick={() => confirmBack(false)} color="primary">
+              Simpan Data & Kembali
+            </Button>
+          </DialogActions>
+        </Dialog>
         {step === 0 && renderDataDonaturSection()}
         {step === 1 && renderDetailDonasiSection()}
 
