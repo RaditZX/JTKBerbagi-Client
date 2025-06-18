@@ -14,13 +14,14 @@ import DescriptionIcon from "@mui/icons-material/Description";
 import { Box, Divider, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import TaskAltIcon from "@mui/icons-material/TaskAlt";
-import AccountBalanceOutlinedIcon from "@mui/icons-material/AccountBalanceOutlined";
-import { orange } from "@mui/material/colors";
+import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
+import { red } from "@mui/material/colors";
 import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
+import FormControl from "@mui/material/FormControl";
+import Select from "@mui/material/Select";
 import TablePagination from "@mui/material/TablePagination";
-import { ExportButtonWithValidation } from "../components/export/exportPenyaluranBeasiswaToPDF";
-import { ModalFormRekening } from "../components/form/FormUpdateRekening";
+import Modal from "@mui/material/Modal";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -48,16 +49,13 @@ function LaporanRekapitulasiBeasiswa() {
   const [dataTableDonatur, setDataTableDonatur] = useState([]);
   const [dataTablePenerima, setDataTablePenerima] = useState([]);
   const [monthArray, setMonthArray] = useState([]);
+  const [indexMonth, setIndexMonth] = useState([]);
   const [status, setStatus] = useState("true");
   const [nominal, setNominal] = useState("");
   const [id, setId] = useState("");
   const [infoDana, setInfoDana] = useState([]);
+  const [jenis, setJenis] = useState("Beasiswa");
   const [bulanPenyaluran, setBulanPenyaluran] = useState("");
-  const [penerimaBeasiswa, setPenerimaBeasiswa] = useState([]);
-  const [openModal, setOpenModal] = useState(false);  
-  const handleOpenModal = () => setOpenModal(true);
-  const handleCloseModal = () => setOpenModal(false);
-  const [rowIndex, setRowIndex] = useState(0);
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -72,6 +70,9 @@ function LaporanRekapitulasiBeasiswa() {
   };
   const [batch, setBatch] = useState([]);
 
+  const handleChange = (event) => {
+    setBatch(event.target.value);
+  };
 
   const headers = [
     { title: "Nama Donatur", id: "nama", parentId: "donatur_id" },
@@ -184,7 +185,7 @@ function LaporanRekapitulasiBeasiswa() {
           });
         }
         setMonthArray(arrayMonth);
-        console.dir(arrayMonth);
+        console.log(arrayMonth);
       });
   };
 
@@ -204,22 +205,16 @@ function LaporanRekapitulasiBeasiswa() {
       ...month,
       index,
     }));
-    console.dir(fixedMonthArray);
-
+    console.log(fixedMonthArray);
     fixedMonthArray?.map((month) => {
       const monthName = month?.name;
       if (monthName === monthSelect) {
         setBulanPenyaluran(month.index);
-        console.log("bulanpenyaluran:" + month.index);
+        console.log(month.index);
       }
     });
-    const params = new URLSearchParams({
-      id: id,
-      month: monthSelect,
-    }).toString();
-
     await fetch(
-      `http://localhost:8000/v1/rekapitulasi/getRekapitulasiBeasiswa?${params}`,
+      "http://localhost:8000/v1/rekapitulasi/getRekapitulasiBeasiswa",
       {
         method: "POST",
         headers: {
@@ -227,6 +222,10 @@ function LaporanRekapitulasiBeasiswa() {
           "Content-Type": "application/json",
           "Access-Control-Allow-Origin": "*",
         },
+        body: JSON.stringify({
+          id: id,
+          month: monthSelect,
+        }),
       }
     )
       .then((response) => response.json())
@@ -238,7 +237,6 @@ function LaporanRekapitulasiBeasiswa() {
         for (let i = 0; i < data.data.penerima_beasiswa.length; i++) {
           arrayPenerima.push(data.data.penerima_beasiswa[i]);
         }
-        setPenerimaBeasiswa(arrayPenerima);
         for (let i = 0; i < data.data.rekapitulasi_donasi.length; i++) {
           arrayDonatur.push(data.data.rekapitulasi_donasi[i]);
         }
@@ -253,7 +251,7 @@ function LaporanRekapitulasiBeasiswa() {
   };
   const selectPenyaluranDanaBeasiswa = async (id) => {
     await fetch(
-      `http://localhost:8000/v1/rekapitulasi/selectPenyaluranBeasiswa`,
+      "http://localhost:8000/v1/rekapitulasi/selectPenyaluranBeasiswa",
       {
         method: "POST",
         headers: {
@@ -290,11 +288,6 @@ function LaporanRekapitulasiBeasiswa() {
         p: 2,
       }}
     >
-      <ModalFormRekening
-        isOpen={openModal}
-        onClose={openModal ? handleCloseModal : null}
-        initialData={penerimaBeasiswa[rowIndex]}
-      />
       <Box
         sx={{
           display: "flex",
@@ -319,10 +312,7 @@ function LaporanRekapitulasiBeasiswa() {
               size="small"
               label="Pilih batch"
               sx={{ minWidth: 200 }}
-              onChange={(val) => {
-                getBulanRekapitulasiBeasiswa(val.target.value);
-                setId(val.target.value);
-              }}
+              onChange={(val) => getBulanRekapitulasiBeasiswa(val.target.value)}
             >
               {batch.map((option) => (
                 <MenuItem key={option.value} value={option.value}>
@@ -353,12 +343,6 @@ function LaporanRekapitulasiBeasiswa() {
           </Box>
         </Box>
         <Box sx={{ mt: 2 }}>
-          <ExportButtonWithValidation
-            penerimaBeasiswa={penerimaBeasiswa}
-            monthArray={monthArray}
-            id={id}
-          />
-
           <TextField
             search
             size="small"
@@ -421,7 +405,7 @@ function LaporanRekapitulasiBeasiswa() {
                           )}
                         </StyledTableCell>
                       ))}
-                      <StyledTableCell sx={{ textAlign: "center" }}>
+                      <StyledTableCell>
                         {row.nominal_penyaluran[bulanPenyaluran - 1] === 0 ? (
                           <TextField
                             label="Cth: 400000"
@@ -433,28 +417,20 @@ function LaporanRekapitulasiBeasiswa() {
                           />
                         ) : (
                           <Typography>
-                            Rp{row.nominal_penyaluran[bulanPenyaluran - 1]?row.nominal_penyaluran[bulanPenyaluran - 1].toLocaleString("id-ID"):"0".toLocaleString("id-ID")}
+                            {row.nominal_penyaluran[bulanPenyaluran - 1]}
                           </Typography>
                         )}
                       </StyledTableCell>
-
-                      <StyledTableCell sx={{ display: "flex",justifyContent:"center",textAlign: "center" }}>
+                      <StyledTableCell sx={{ display: "flex" }}>
                         <Button
                           onClick={(val) => {
                             selectPenyaluranDanaBeasiswa(
-                              row.bantuan_dana_beasiswa_id
+                              row.bantuan_dana_beasiswa_id,
+                              val.target.value
                             );
                           }}
                         >
                           <TaskAltIcon sx={{ mr: 2 }} color="primary" />
-                        </Button>
-                        <Button
-                          onClick={(val) => {
-                            handleOpenModal();
-                            setRowIndex(index);
-                          }}
-                        >
-                          <AccountBalanceOutlinedIcon sx={{ color: orange[500], mr: 2 }} />
                         </Button>
                       </StyledTableCell>
                     </StyledTableRow>
