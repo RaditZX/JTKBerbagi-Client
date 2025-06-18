@@ -34,31 +34,14 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
 }));
 
 const StyledTableRow = styled(TableRow)(({ theme }) => ({
-  '&:nth-of-type(odd)': {
-    backgroundColor: '#E1F1FF',
+  "&:nth-of-type(odd)": {
+    backgroundColor: "#E1F1FF",
   },
-  '&:last-child td, &:last-child th': {
+  // hide last border
+  "&:last-child td, &:last-child th": {
     border: 0,
   },
 }));
-
-const modalStyle = {
-  position: 'absolute',
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
-  width: 400,
-  bgcolor: 'background.paper',
-  borderRadius: '8px',
-  boxShadow: 24,
-  p: 4,
-};
-
-const dialogStyle = {
-  '& .MuiDialog-paper': {
-    borderRadius: '8px',
-  },
-};
 
 function LaporanRekapitulasiBeasiswa() {
   const [page, setPage] = useState(0);
@@ -67,138 +50,80 @@ function LaporanRekapitulasiBeasiswa() {
   const [dataTablePenerima, setDataTablePenerima] = useState([]);
   const [monthArray, setMonthArray] = useState([]);
   const [indexMonth, setIndexMonth] = useState([]);
-  const [status, setStatus] = useState('true');
-  const [nominal, setNominal] = useState('');
-  const [nominalError, setNominalError] = useState('');
-  const [id, setId] = useState('');
+  const [status, setStatus] = useState("true");
+  const [nominal, setNominal] = useState("");
+  const [id, setId] = useState("");
   const [infoDana, setInfoDana] = useState([]);
-  const [jenis, setJenis] = useState('Beasiswa');
-  const [bulanPenyaluran, setBulanPenyaluran] = useState('');
-  const [openModal, setOpenModal] = useState(false);
-  const [openSisaSaldoDialog, setOpenSisaSaldoDialog] = useState(false);
-  const [selectedPenerima, setSelectedPenerima] = useState(null);
-  const [sisaSaldo, setSisaSaldo] = useState(0);
+  const [jenis, setJenis] = useState("Beasiswa");
+  const [bulanPenyaluran, setBulanPenyaluran] = useState("");
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
   };
 
-  const handleNominalChange = (e) => {
-    const value = e.target.value;
-    if (/^\d*$/.test(value) && value >= 0) {
-      setNominal(value);
-      setNominalError('');
-    } else {
-      setNominalError('Nominal harus berupa angka positif');
-    }
+  const handleNominalChange = (val) => {
+    setNominal(val);
   };
-
   const handleChangeRowsPerPage = (event) => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   };
-
   const [batch, setBatch] = useState([]);
 
   const handleChange = (event) => {
     setBatch(event.target.value);
   };
 
-  const handleOpenModal = (penerima) => {
-    setSelectedPenerima(penerima);
-    setOpenModal(true);
-  };
-
-  const handleCloseModal = () => {
-    setOpenModal(false);
-    setSelectedPenerima(null);
-    setNominal('');
-    setNominalError('');
-  };
-
-  const handleOpenSisaSaldoDialog = () => {
-    if (selectedPenerima && nominal) {
-      const totalDibutuhkan = selectedPenerima.total_dana_dibutuhkan || 0;
-      const totalDisalurkanLama = selectedPenerima.nominal_penyaluran[bulanPenyaluran - 1] || 0;
-      const totalDisalurkanBaru = totalDisalurkanLama + parseInt(nominal || 0);
-      const sisa = totalDibutuhkan - totalDisalurkanBaru;
-      setSisaSaldo(sisa > 0 ? sisa : 0);
-      setOpenSisaSaldoDialog(true);
-    }
-  };
-
-  const handleCloseSisaSaldoDialog = () => {
-    setOpenSisaSaldoDialog(false);
-  };
-
-  const handleSalurkanDana = () => {
-    if (selectedPenerima && !nominalError && nominal) {
-      handleOpenSisaSaldoDialog();
-    } else if (!nominal) {
-      setNominalError('Nominal tidak boleh kosong');
-    }
-  };
-
-  const handleConfirmSalurkanDana = () => {
-    if (selectedPenerima && nominal) {
-      // Simulasi pembaruan data (harus diperbarui via API di aplikasi nyata)
-      const updatedPenerima = [...dataTablePenerima];
-      const index = updatedPenerima.findIndex(p => p === selectedPenerima);
-      const totalDisalurkanLama = selectedPenerima.nominal_penyaluran[bulanPenyaluran - 1] || 0;
-      updatedPenerima[index] = {
-        ...selectedPenerima,
-        nominal_penyaluran: [
-          ...selectedPenerima.nominal_penyaluran.slice(0, bulanPenyaluran - 1),
-          totalDisalurkanLama + parseInt(nominal),
-          ...selectedPenerima.nominal_penyaluran.slice(bulanPenyaluran),
-        ],
-      };
-      setDataTablePenerima(updatedPenerima);
-
-      selectPenyaluranDanaBeasiswa(selectedPenerima.bantuan_dana_beasiswa_id);
-      handleCloseSisaSaldoDialog();
-      handleCloseModal();
-    }
-  };
-
   const headers = [
-    { title: 'Nama Donatur', id: 'nama', parentId: 'donatur_id' },
-    { title: 'Nomor Telepon', id: 'nomor_telepon', parentId: 'donatur_id' },
-    { title: 'Nominal Donasi (Rp)', id: 'nominal_donasi' },
-    { title: 'Nomor Referensi', id: 'nomor_referensi' },
-    { title: 'Bukti Transfer', id: 'struk_pembayaran' },
-    { title: 'Status', id: 'status' },
+    { title: "Nama Donatur", id: "nama", parentId: "donatur_id" },
+    { title: "Nomor Telepon", id: "nomor_telepon", parentId: "donatur_id" },
+    { title: "Nominal Donasi (Rp)", id: "nominal_donasi" },
+    { title: "Nomor Referensi", id: "nomor_referensi" },
+    { title: "Bukti Transfer", id: "struk_pembayaran" },
+    { title: "Status", id: "status" },
   ];
 
   const headers2 = [
-    { title: 'NIM', id: 'nim', parentId: 'mahasiswa' },
-    { title: 'Nama', id: 'nama', parentId: 'mahasiswa' },
-    { title: 'Nomor Telepon', id: 'nomor_telepon', parentId: 'mahasiswa' },
-    { title: 'Nomor Rekening', id: 'nomor_rekening', parentId: 'rekening_bank' },
-    { title: 'Nama Bank', id: 'nama_bank', parentId: 'rekening_bank' },
-    { title: 'Nama Pemilik Rekening', id: 'nama_pemilik_rekening', parentId: 'rekening_bank' },
-    { title: 'Total Dana Dibutuhkan (Rp)', id: 'total_dana_dibutuhkan' },
-    { title: 'Total Dana Disalurkan (Rp)', id: 'nominal_penyaluran' },
-    { title: 'Status Beasiswa', id: 'status' },
-    { title: 'Alasan', id: 'alasan' },
+    { title: "NIM", id: "nim", parentId: "mahasiswa" },
+    { title: "Nama", id: "nama", parentId: "mahasiswa" },
+    { title: "Nomor Telepon", id: "nomor_telepon", parentId: "mahasiswa" },
+    {
+      title: "Nomor Rekening",
+      id: "nomor_rekening",
+      parentId: "rekening_bank",
+    },
+    { title: "Nama Bank", id: "nama_bank", parentId: "rekening_bank" },
+    {
+      title: "Nama Pemilik Rekening",
+      id: "nama_pemilik_rekening",
+      parentId: "rekening_bank",
+    },
   ];
 
   useEffect(() => {
     const getAllPenggalanganDana = async () => {
       await fetch(
-        'http://localhost:8000/v1/penggalangan/penggalangan_dana/getAllPenggalanganDana',
+        "http://localhost:8000/v1/penggalangan/penggalangan_dana/getAllPenggalanganDana",
         {
-          method: 'GET',
+          method: "GET",
           headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': '*',
+            Accept: "application/json",
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin": "*",
           },
         }
       )
         .then((response) => response.json())
         .then((data) => {
-          setId(data.data[0].penggalangan_dana_id);
+          console.log("Response getAllPenggalanganDana:", data);
+          if (data.data && Array.isArray(data.data) && data.data.length > 0) {
+            setId(data.data[0].penggalangan_dana_id);
+          } else {
+            console.error(
+              "Data penggalangan dana kosong atau tidak sesuai:",
+              data
+            );
+          }
         });
     };
     getAllPenggalanganDana();
@@ -207,18 +132,19 @@ function LaporanRekapitulasiBeasiswa() {
   useEffect(() => {
     const getAllBatchRekapitulasiBeasiswa = async () => {
       await fetch(
-        'http://localhost:8000/v1/rekapitulasi/getAllBatchRekapitulasiBeasiswa',
+        "http://localhost:8000/v1/rekapitulasi/getAllBatchRekapitulasiBeasiswa",
         {
-          method: 'GET',
+          method: "GET",
           headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': '*',
+            Accept: "application/json",
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin": "*",
           },
         }
       )
         .then((response) => response.json())
         .then((data) => {
+          console.log(data.data);
           let arrayBatch = [];
           for (let i = 0; i < data.data.length; i++) {
             arrayBatch.push({
@@ -227,20 +153,20 @@ function LaporanRekapitulasiBeasiswa() {
             });
           }
           setBatch(arrayBatch);
+          console.log(arrayBatch);
         });
     };
     getAllBatchRekapitulasiBeasiswa();
   }, []);
-
   const getBulanRekapitulasiBeasiswa = async (batch) => {
     await fetch(
-      'http://localhost:8000/v1/rekapitulasi/getBulanRekapitulasiBeasiswa',
+      "http://localhost:8000/v1/rekapitulasi/getBulanRekapitulasiBeasiswa",
       {
-        method: 'POST',
+        method: "POST",
         headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json',
-          'Access-Control-Allow-Origin': '*',
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Origin": "*",
         },
         body: JSON.stringify({
           id: batch,
@@ -249,6 +175,7 @@ function LaporanRekapitulasiBeasiswa() {
     )
       .then((response) => response.json())
       .then((data) => {
+        console.log(data.data);
         let arrayMonth = [];
         for (let i = 0; i < data.data.length; i++) {
           arrayMonth.push({
@@ -258,6 +185,7 @@ function LaporanRekapitulasiBeasiswa() {
           });
         }
         setMonthArray(arrayMonth);
+        console.log(arrayMonth);
       });
   };
 
@@ -277,20 +205,22 @@ function LaporanRekapitulasiBeasiswa() {
       ...month,
       index,
     }));
+    console.log(fixedMonthArray);
     fixedMonthArray?.map((month) => {
       const monthName = month?.name;
       if (monthName === monthSelect) {
         setBulanPenyaluran(month.index);
+        console.log(month.index);
       }
     });
     await fetch(
-      'http://localhost:8000/v1/rekapitulasi/getRekapitulasiBeasiswa',
+      "http://localhost:8000/v1/rekapitulasi/getRekapitulasiBeasiswa",
       {
-        method: 'POST',
+        method: "POST",
         headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json',
-          'Access-Control-Allow-Origin': '*',
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Origin": "*",
         },
         body: JSON.stringify({
           id: id,
@@ -300,6 +230,7 @@ function LaporanRekapitulasiBeasiswa() {
     )
       .then((response) => response.json())
       .then((data) => {
+        console.log(data.data);
         let arrayPenerima = [];
         let arrayDonatur = [];
         let arrayDana = [];
@@ -313,18 +244,20 @@ function LaporanRekapitulasiBeasiswa() {
         setInfoDana(arrayDana);
         setDataTablePenerima(arrayPenerima);
         setDataTableDonatur(arrayDonatur);
+        console.log(arrayDonatur);
+        console.log(arrayPenerima);
+        console.log(arrayDana);
       });
   };
-
   const selectPenyaluranDanaBeasiswa = async (id) => {
     await fetch(
-      'http://localhost:8000/v1/rekapitulasi/selectPenyaluranBeasiswa',
+      "http://localhost:8000/v1/rekapitulasi/selectPenyaluranBeasiswa",
       {
-        method: 'POST',
+        method: "POST",
         headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json',
-          'Access-Control-Allow-Origin': '*',
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Origin": "*",
         },
         body: JSON.stringify({
           is_penyaluran: status,
@@ -338,6 +271,7 @@ function LaporanRekapitulasiBeasiswa() {
       .then((data) => {
         let arrayData = [];
         arrayData.push(data.data.nominal_penyaluran);
+        console.log(data.data.nominal_penyaluran);
       })
       .catch((err) => {
         console.log(err.message);
@@ -349,19 +283,19 @@ function LaporanRekapitulasiBeasiswa() {
       disableGutters
       maxWidth={false}
       sx={{
-        width: '100%',
-        height: '100%',
+        width: "100%",
+        height: "100%",
         p: 2,
       }}
     >
       <Box
         sx={{
-          display: 'flex',
+          display: "flex",
           padding: 2,
-          backgroundColor: '#1559E6',
-          color: 'white',
-          borderRadius: '4px',
-          alignItems: 'center',
+          backgroundColor: "#1559E6",
+          color: "white",
+          borderRadius: "4px",
+          alignItems: "center",
         }}
       >
         <DescriptionIcon />
@@ -369,8 +303,8 @@ function LaporanRekapitulasiBeasiswa() {
           Laporan Rekapitulasi Dana Beasiswa
         </Typography>
       </Box>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-        <Box sx={{ mt: 2, display: 'flex' }}>
+      <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+        <Box sx={{ mt: 2, display: "flex" }}>
           <Box sx={{ minWidth: 120 }}>
             <TextField
               select
@@ -378,9 +312,7 @@ function LaporanRekapitulasiBeasiswa() {
               size="small"
               label="Pilih batch"
               sx={{ minWidth: 200 }}
-              onChange={(val) =>
-                getBulanRekapitulasiBeasiswa(val.target.value)
-              }
+              onChange={(val) => getBulanRekapitulasiBeasiswa(val.target.value)}
             >
               {batch.map((option) => (
                 <MenuItem key={option.value} value={option.value}>
@@ -396,9 +328,7 @@ function LaporanRekapitulasiBeasiswa() {
               size="small"
               label="Pilih bulan"
               sx={{ minWidth: 200 }}
-              onChange={(val) =>
-                getRekapitulasiBeasiswa(val.target.value)
-              }
+              onChange={(val) => getRekapitulasiBeasiswa(val.target.value)}
             >
               {monthArray.map((option) => (
                 <MenuItem
@@ -414,6 +344,7 @@ function LaporanRekapitulasiBeasiswa() {
         </Box>
         <Box sx={{ mt: 2 }}>
           <TextField
+            search
             size="small"
             label="Search"
             type="search"
@@ -427,63 +358,79 @@ function LaporanRekapitulasiBeasiswa() {
               <TableHead>
                 <StyledTableCell>No</StyledTableCell>
                 {headers2.map((header) => (
-                  <StyledTableCell sx={{ textAlign: 'center' }}>
+                  <StyledTableCell sx={{ textAlign: "center" }}>
                     {header.title}
                   </StyledTableCell>
                 ))}
-                <StyledTableCell sx={{ textAlign: 'center' }}>
-                  Aksi
+                <StyledTableCell sx={{ textAlign: "center" }}>
+                  Total Dana Disalurkan (Rp)
+                </StyledTableCell>
+                <StyledTableCell sx={{ textAlign: "center" }}>
+                  Action
                 </StyledTableCell>
               </TableHead>
               <TableBody>
                 {dataTablePenerima
-                  .slice(
-                    page * rowsPerPage,
-                    page * rowsPerPage + rowsPerPage
-                  )
+                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   .map((row, index) => (
                     <StyledTableRow key={index}>
                       <StyledTableCell>{index + 1}</StyledTableCell>
-                      {headers2.map((header) => (
-                        <StyledTableCell sx={{ textAlign: 'center' }}>
-                          {header.id === 'status' ? (
+                      {Object.entries(headers2).map(([key, val]) => (
+                        <StyledTableCell sx={{ textAlign: "center" }}>
+                          {val.id === "status" ? (
                             <Button
                               size="small"
                               variant="outlined"
                               color="success"
-                              sx={{ backgroundColor: '#EBF9F1' }}
+                              sx={{ backgroundColor: "#EBF9F1" }}
                             >
                               <Typography
                                 style={{
-                                  textTransform: 'capitalize',
-                                  color: '#1F9254',
-                                  fontSize: '12px',
+                                  textTransform: "capitalize",
+                                  color: "#1F9254",
+                                  fontSize: "12px",
                                 }}
                               >
                                 Approved
                               </Typography>
                             </Button>
-                          ) : header.id === 'nominal_penyaluran' ? (
-                            <Typography>
-                              {row.nominal_penyaluran[bulanPenyaluran - 1] ||
-                                0}
-                            </Typography>
+                          ) : val.id === "dokumen_kehadiran_perkuliahan" ? (
+                            <Button>Open</Button>
                           ) : (
                             <span>
-                              {header?.parentId
-                                ? row?.[header.parentId]?.[header.id]
-                                : row?.[header.id] || '-'}
+                              {val?.parentId
+                                ? row?.[val.parentId]?.[val.id]
+                                : row?.[val.id]}
                             </span>
                           )}
                         </StyledTableCell>
                       ))}
-                      <StyledTableCell sx={{ textAlign: 'center' }}>
+                      <StyledTableCell>
+                        {row.nominal_penyaluran[bulanPenyaluran - 1] === 0 ? (
+                          <TextField
+                            label="Cth: 400000"
+                            variant="outlined"
+                            sx={{ minWidth: 150 }}
+                            onChange={(val) => {
+                              handleNominalChange(parseInt(val.target.value));
+                            }}
+                          />
+                        ) : (
+                          <Typography>
+                            {row.nominal_penyaluran[bulanPenyaluran - 1]}
+                          </Typography>
+                        )}
+                      </StyledTableCell>
+                      <StyledTableCell sx={{ display: "flex" }}>
                         <Button
-                          variant="contained"
-                          color="primary"
-                          onClick={() => handleOpenModal(row)}
+                          onClick={(val) => {
+                            selectPenyaluranDanaBeasiswa(
+                              row.bantuan_dana_beasiswa_id,
+                              val.target.value
+                            );
+                          }}
                         >
-                          Detail
+                          <TaskAltIcon sx={{ mr: 2 }} color="primary" />
                         </Button>
                       </StyledTableCell>
                     </StyledTableRow>
@@ -492,122 +439,6 @@ function LaporanRekapitulasiBeasiswa() {
             </Table>
           </TableContainer>
         </Box>
-
-        <Modal
-          open={openModal}
-          onClose={handleCloseModal}
-          aria-labelledby="modal-modal-title"
-          aria-describedby="modal-modal-description"
-        >
-          <Box sx={modalStyle}>
-            <Typography
-              id="modal-modal-title"
-              variant="h6"
-              component="h2"
-              sx={{ mb: 2 }}
-            >
-              Penyaluran Dana
-            </Typography>
-            {selectedPenerima && (
-              <Box>
-                <TextField
-                  label="NIM"
-                  value={selectedPenerima?.mahasiswa?.nim || '-'}
-                  variant="outlined"
-                  fullWidth
-                  sx={{ mb: 2 }}
-                  InputProps={{
-                    readOnly: true,
-                  }}
-                />
-                <TextField
-                  label="Nama"
-                  value={selectedPenerima?.mahasiswa?.nama || '-'}
-                  variant="outlined"
-                  fullWidth
-                  sx={{ mb: 2 }}
-                  InputProps={{
-                    readOnly: true,
-                  }}
-                />
-                <TextField
-                  label="Nomor Rekening"
-                  value={
-                    selectedPenerima?.rekening_bank?.nomor_rekening || '-'
-                  }
-                  variant="outlined"
-                  fullWidth
-                  sx={{ mb: 2 }}
-                  InputProps={{
-                    readOnly: true,
-                  }}
-                />
-                <TextField
-                  label="Nama Bank"
-                  value={selectedPenerima?.rekening_bank?.nama_bank || '-'}
-                  variant="outlined"
-                  fullWidth
-                  sx={{ mb: 2 }}
-                  InputProps={{
-                    readOnly: true,
-                  }}
-                />
-                <TextField
-                  label="Nominal yang akan ditransfer (Rp)"
-                  value={nominal}
-                  onChange={handleNominalChange}
-                  variant="outlined"
-                  fullWidth
-                  sx={{ mb: 2 }}
-                  type="number"
-                  inputProps={{ min: 0 }}
-                  error={!!nominalError}
-                  helperText={nominalError}
-                />
-                <Button
-                  variant="contained"
-                  color="primary"
-                  fullWidth
-                  onClick={handleSalurkanDana}
-                  disabled={!!nominalError || !nominal}
-                >
-                  Salurkan Dana
-                </Button>
-              </Box>
-            )}
-          </Box>
-        </Modal>
-
-        <Dialog
-          open={openSisaSaldoDialog}
-          onClose={handleCloseSisaSaldoDialog}
-          sx={dialogStyle}
-        >
-          <DialogTitle>Sisa Saldo</DialogTitle>
-          <DialogContent>
-            <Typography variant="body1">
-              Sisa total dana yang dibutuhkan (Rp)
-            </Typography>
-            <TextField
-              value={sisaSaldo}
-              variant="outlined"
-              fullWidth
-              sx={{ mt: 1, mb: 2 }}
-              InputProps={{
-                readOnly: true,
-              }}
-            />
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={handleCloseSisaSaldoDialog} color="secondary">
-              Batal
-            </Button>
-            <Button onClick={handleConfirmSalurkanDana} color="primary" variant="contained">
-              Konfirmasi
-            </Button>
-          </DialogActions>
-        </Dialog>
-
         <Box sx={{ mt: 3 }}>
           <Typography variant="h4">List Donatur</Typography>
         </Box>
@@ -617,36 +448,33 @@ function LaporanRekapitulasiBeasiswa() {
               <TableHead>
                 <StyledTableCell>No</StyledTableCell>
                 {headers.map((header) => (
-                  <StyledTableCell sx={{ textAlign: 'center' }}>
+                  <StyledTableCell sx={{ textAlign: "center" }}>
                     {header.title}
                   </StyledTableCell>
                 ))}
               </TableHead>
               <TableBody>
                 {dataTableDonatur
-                  .slice(
-                    page * rowsPerPage,
-                    page * rowsPerPage + rowsPerPage
-                  )
+                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   .map((row, index) => (
                     <StyledTableRow key={index}>
                       <StyledTableCell>{index + 1}</StyledTableCell>
                       {Object.entries(headers).map(([key, val]) => (
-                        <StyledTableCell sx={{ textAlign: 'center' }}>
-                          {val.id === 'struk_pembayaran' ? (
+                        <StyledTableCell sx={{ textAlign: "center" }}>
+                          {val.id === "struk_pembayaran" ? (
                             <Button>Open</Button>
-                          ) : val.id === 'status' ? (
+                          ) : val.id === "status" ? (
                             <Button
                               size="small"
                               variant="outlined"
                               color="success"
-                              sx={{ backgroundColor: '#EBF9F1' }}
+                              sx={{ backgroundColor: "#EBF9F1" }}
                             >
                               <Typography
                                 style={{
-                                  textTransform: 'capitalize',
-                                  color: '#1F9254',
-                                  fontSize: '12px',
+                                  textTransform: "capitalize",
+                                  color: "#1F9254",
+                                  fontSize: "12px",
                                 }}
                               >
                                 Approved
@@ -674,10 +502,10 @@ function LaporanRekapitulasiBeasiswa() {
           onPageChange={handleChangePage}
           rowsPerPage={rowsPerPage}
           onRowsPerPageChange={handleChangeRowsPerPage}
-        />
+        ></TablePagination>
         <Box>
           {infoDana.map((info, index) => (
-            <Box key={index}>
+            <Box>
               <Typography>Saldo awal : {info.saldo_awal}</Typography>
               <Typography>Saldo akhir : {info.saldo_akhir}</Typography>
               <Typography>Total Pemasukan : {info.total_pemasukan}</Typography>
@@ -691,8 +519,4 @@ function LaporanRekapitulasiBeasiswa() {
     </Container>
   );
 }
-
 export default LaporanRekapitulasiBeasiswa;
-
-
-
