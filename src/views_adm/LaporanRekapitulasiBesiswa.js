@@ -440,7 +440,7 @@ function LaporanRekapitulasiBeasiswa() {
           </TableContainer>
         </Box>
         <Box sx={{ mt: 3 }}>
-          <Typography variant="h4">List Donatur</Typography>
+          <Typography variant="h4">List Donat</Typography>
         </Box>
         <Box sx={{ mt: 1 }}>
           <TableContainer component={Paper}>
