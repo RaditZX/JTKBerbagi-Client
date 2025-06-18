@@ -7,14 +7,25 @@ import TimelineContent from '@mui/lab/TimelineContent';
 import TimelineDot from '@mui/lab/TimelineDot';
 import { useState } from "react";
 
+import AutoComplete from "../molekul/autocomplete/AutoComplete";
+
 function FormulirBeasiswa() {
 	const [namaMahasiswa, setNamaMahasiswa] = useState('');
 	const handleNamaMahasiswaChange = (val) => {
-		setNamaMahasiswa(val)
+		if (typeof val === 'object' && val !== null) {
+			setNamaMahasiswa(val.nama || '');
+			setNimMahasiswa(val.nim || '');
+		} else {
+			setNamaMahasiswa(val); // allow manual input
+		}
 	}
 	const [nimMahasiswa, setNimMahasiswa] = useState('');
 	const handleNimMahasiswaChange = (val) => {
-		setNimMahasiswa(val)
+		if (typeof val === 'object' && val !== null) {
+			setNimMahasiswa(val.nim || '');
+			setNamaMahasiswa(val.nama || '');
+		} else {
+			setNimMahasiswa(val || '');		}
 	}
 	const [noTelepon, setNoTelepon] = useState('');
 	const handleNoTeleponChange = (val) => {
@@ -192,15 +203,15 @@ function FormulirBeasiswa() {
 						}}
 					>
 						<TimelineItem>
-							<TimelineSeparator>
-								<TimelineDot color="error" variant="outlined" />
+							{/* <TimelineSeparator>
+								<TimelineDot color="grey" variant="outlined" />
 								<TimelineConnector />
-							</TimelineSeparator>
+							</TimelineSeparator> */}
 							<TimelineContent sx={{ width: 'max-content' }}><Typography variant='h3' sx={{ fontWeight: 'bold' }}>Daftar Beasiswa</Typography></TimelineContent>
 						</TimelineItem>
 						<TimelineItem>
 							<TimelineSeparator>
-								<TimelineDot />
+								<TimelineDot color="info" variant="outlined"/>
 								<TimelineConnector />
 							</TimelineSeparator>
 							<TimelineContent variant='h4' sx={{ width: 'max-content', fontWeight: '0' }}>Data Pribadi</TimelineContent>
@@ -216,9 +227,11 @@ function FormulirBeasiswa() {
 				<Box sx={{ display: 'flex', flexDirection: 'column', mt: 4 }}>
 					<Typography variant='h3' sx={{ fontWeight: 'bold' }}>Identitas Calon Penerima Beasiswa</Typography>
 					<Typography variant='body1' nama='nama' sx={{ mt: 3, color: '#636E72', fontWeight: 'bold' }}>Nama Mahasiswa</Typography>
-					<TextField variant="outlined" size="small" label='cth: John Doe' onChange={(val) => { handleNamaMahasiswaChange(val.target.value) }}></TextField>
+					{/* <TextField variant="outlined" size="small" label='cth: John Doe' onChange={(val) => { handleNamaMahasiswaChange(val.target.value) }}></TextField> */}
+					<AutoComplete onChange={handleNamaMahasiswaChange} placeholder='cth: Hasbi' textFieldLabel='cth: Hasbi' tableName='mahasiswa' columnName='nama' suggestionDisplayField="nama" suggestionValueField="nama" value={namaMahasiswa}/>
 					<Typography variant='body1' sx={{ mt: 2, color: '#636E72', fontWeight: 'bold' }}>Nomor Induk Mahasiswa</Typography>
-					<TextField variant="outlined" size="small" label='Pilih NIM' onChange={(val) => { handleNimMahasiswaChange(val.target.value) }}></TextField>
+					{/* <TextField variant="outlined" size="small" label='Pilih NIM' onChange={(val) => { handleNimMahasiswaChange(val.target.value) }}></TextField> */}
+					<AutoComplete onChange={handleNimMahasiswaChange} placeholder='cth: 231511000' textFieldLabel='cth: 231511000' tableName='mahasiswa' columnName='nim' suggestionDisplayField="nim" suggestionValueField="nim" value={nimMahasiswa}/>
 					<Typography variant='body1' sx={{ mt: 2, color: '#636E72', fontWeight: 'bold' }}>Nomor Telepon</Typography>
 					<TextField variant="outlined" size="small" label='cth: 082121445524' onChange={(val) => { handleNoTeleponChange(val.target.value) }}></TextField>
 					<Typography variant='body1' sx={{ mt: 2, color: '#636E72', fontWeight: 'bold' }}>Nama Pemilik Rekening</Typography>
@@ -246,10 +259,10 @@ function FormulirBeasiswa() {
 						}}
 					>
 						<TimelineItem>
-							<TimelineSeparator>
+							{/* <TimelineSeparator>
 								<TimelineDot color="error" variant="outlined" />
 								<TimelineConnector />
-							</TimelineSeparator>
+							</TimelineSeparator> */}
 							<TimelineContent sx={{ width: 'max-content' }}><Typography variant='h4' sx={{ fontWeight: 'bold' }}>Daftar Beasiswa</Typography></TimelineContent>
 						</TimelineItem>
 						<TimelineItem>
@@ -261,7 +274,7 @@ function FormulirBeasiswa() {
 						</TimelineItem>
 						<TimelineItem>
 							<TimelineSeparator>
-								<TimelineDot />
+								<TimelineDot color="info" variant="outlined"/>
 							</TimelineSeparator>
 							<TimelineContent variant='h4'>Persyaratan</TimelineContent>
 						</TimelineItem>
@@ -306,6 +319,11 @@ function FormulirBeasiswa() {
 					<TextField variant="outlined" size="small" label='Biaya Pengeluaran / bulan (Rp)' sx={{ mt: 1 }} onChange={(val) => { handleBiayaPengeluaran(val.target.value) }} />
 					<Typography variant='body1' sx={{ mt: 2, color: '#636E72', fontWeight: 'bold' }}>Dokumen Esai</Typography>
 					<TextField type="file" onChange={(val) => { handleDokumenEsai(val.target.value) }} />
+					<Typography variant="caption" display="block" sx={{ mt: 0.5, color: 'text.secondary' }}>
+						*Esai berisi cerita mengenai kondisi ekonomi anda, serta motivasi anda untuk menjalani perkuliahan.
+						<br/>
+						**Format file: pdf
+					</Typography>
 					<div>
 						<Button size="medium" variant="contained" sx={{ mt: 4, textTransform: 'capitalize' }} onClick={createPengajuanBeasiswa}>Submit</Button>
 						<Button href="/form-beasiswa" size="medium" variant="outlined" sx={{ mt: 4, ml: 1, textTransform: 'capitalize' }}>Sebelumnya</Button>
