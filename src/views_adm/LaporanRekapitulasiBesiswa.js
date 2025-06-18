@@ -5,16 +5,14 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
-import SidebarAdmin from "../components/molekul/sidebar/SidebarAdmin";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import Container from "@mui/material/Container";
 import { styled } from "@mui/material/styles";
 import DescriptionIcon from "@mui/icons-material/Description";
-import { Box, Divider, Typography } from "@mui/material";
-import { useEffect, useState } from "react";
+import { Box, Typography } from "@mui/material";
+import { useEffect, useState, useCallback } from "react";
 import TaskAltIcon from "@mui/icons-material/TaskAlt";
-import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import { red } from "@mui/material/colors";
 import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
@@ -22,6 +20,7 @@ import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
 import TablePagination from "@mui/material/TablePagination";
 import Modal from "@mui/material/Modal";
+import { useDropzone } from "react-dropzone";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -37,11 +36,22 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
   "&:nth-of-type(odd)": {
     backgroundColor: "#E1F1FF",
   },
-  // hide last border
   "&:last-child td, &:last-child th": {
     border: 0,
   },
 }));
+
+const modalStyle = {
+  position: "absolute",
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
+  width: 400,
+  bgcolor: "background.paper",
+  boxShadow: 24,
+  p: 4,
+  borderRadius: "8px",
+};
 
 function LaporanRekapitulasiBeasiswa() {
   const [page, setPage] = useState(0);
@@ -56,6 +66,11 @@ function LaporanRekapitulasiBeasiswa() {
   const [infoDana, setInfoDana] = useState([]);
   const [jenis, setJenis] = useState("Beasiswa");
   const [bulanPenyaluran, setBulanPenyaluran] = useState("");
+  const [openModal, setOpenModal] = useState(false);
+  const [selectedStudent, setSelectedStudent] = useState(null);
+  const [files, setFiles] = useState([]);
+  const [selectedReason, setSelectedReason] = useState("");
+  const [selectedNIM, setSelectedNIM] = useState("");
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -64,14 +79,31 @@ function LaporanRekapitulasiBeasiswa() {
   const handleNominalChange = (val) => {
     setNominal(val);
   };
+
   const handleChangeRowsPerPage = (event) => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   };
+
   const [batch, setBatch] = useState([]);
 
   const handleChange = (event) => {
     setBatch(event.target.value);
+  };
+
+  const handleOpenModal = (row = null) => {
+    if (row) {
+      setSelectedStudent(row);
+    } else {
+      setSelectedStudent();
+    }
+    setOpenModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setOpenModal(false);
+    setSelectedStudent(null);
+    setFiles([]);
   };
 
   const headers = [
@@ -100,6 +132,30 @@ function LaporanRekapitulasiBeasiswa() {
     },
   ];
 
+  const onDrop = useCallback((acceptedFiles) => {
+    setFiles(
+      acceptedFiles.map((file) =>
+        Object.assign(file, {
+          preview: URL.createObjectURL(file),
+        })
+      )
+    );
+  }, []);
+
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    onDrop,
+    accept: {
+      "application/pdf": [".pdf"],
+      "image/jpeg": [".jpg", ".jpeg"],
+      "image/png": [".png"],
+    },
+    maxFiles: 1,
+  });
+
+  useEffect(() => {
+    return () => files.forEach((file) => URL.revokeObjectURL(file.preview));
+  }, [files]);
+
   useEffect(() => {
     const getAllPenggalanganDana = async () => {
       await fetch(
@@ -115,15 +171,8 @@ function LaporanRekapitulasiBeasiswa() {
       )
         .then((response) => response.json())
         .then((data) => {
-          console.log("Response getAllPenggalanganDana:", data);
-          if (data.data && Array.isArray(data.data) && data.data.length > 0) {
-            setId(data.data[0].penggalangan_dana_id);
-          } else {
-            console.error(
-              "Data penggalangan dana kosong atau tidak sesuai:",
-              data
-            );
-          }
+          console.log(data.data[0].penggalangan_dana_id);
+          setId(data.data[0].penggalangan_dana_id);
         });
     };
     getAllPenggalanganDana();
@@ -158,6 +207,7 @@ function LaporanRekapitulasiBeasiswa() {
     };
     getAllBatchRekapitulasiBeasiswa();
   }, []);
+
   const getBulanRekapitulasiBeasiswa = async (batch) => {
     await fetch(
       "http://localhost:8000/v1/rekapitulasi/getBulanRekapitulasiBeasiswa",
@@ -249,6 +299,7 @@ function LaporanRekapitulasiBeasiswa() {
         console.log(arrayDana);
       });
   };
+
   const selectPenyaluranDanaBeasiswa = async (id) => {
     await fetch(
       "http://localhost:8000/v1/rekapitulasi/selectPenyaluranBeasiswa",
@@ -352,6 +403,10 @@ function LaporanRekapitulasiBeasiswa() {
         </Box>
       </Box>
       <Box sx={{ mt: 2 }}>
+        {<Button variant="contained" onClick={handleOpenModal} sx={{ mb: 2 }}>
+                   Open Modal for Testing
+                </Button>}
+
         <Box>
           <TableContainer component={Paper}>
             <Table sx={{ minWidth: 700 }} aria-label="customized table">
@@ -432,6 +487,11 @@ function LaporanRekapitulasiBeasiswa() {
                         >
                           <TaskAltIcon sx={{ mr: 2 }} color="primary" />
                         </Button>
+                        <Button onClick={() => handleOpenModal(row)}>
+                          <Typography sx={{ color: "primary.main" }}>
+                            Evaluasi
+                          </Typography>
+                        </Button>
                       </StyledTableCell>
                     </StyledTableRow>
                   ))}
@@ -439,6 +499,130 @@ function LaporanRekapitulasiBeasiswa() {
             </Table>
           </TableContainer>
         </Box>
+
+        <Modal
+          open={openModal}
+          onClose={handleCloseModal}
+          aria-labelledby="modal-modal-title"
+          aria-describedby="modal-modal-description"
+        >
+          <Box sx={modalStyle}>
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "flex-end",
+                alignItems: "center",
+              }}
+            >
+              <Button onClick={handleCloseModal}>✕</Button>
+            </Box>
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                backgroundColor: "#1559e6",
+                p: 2,
+                borderRadius: 1,
+              }}
+            >
+              <Typography
+                id="modal-modal-title"
+                variant="h4"
+                align="center"
+                component="h1"
+                sx={{
+                  color: "#ffffff",
+                  alignItems: "center",
+                }}
+              >
+                Evaluasi Penyaluran Beasiswa
+              </Typography>
+            </Box>
+            <Box sx={{ mt: 2 }}>
+              <TextField
+                select
+                fullWidth
+                label="NIM"
+                value={selectedNIM || selectedStudent?.mahasiswa?.nim || ""}
+                onChange={(e) => {
+                  const nim = e.target.value;
+                  setSelectedNIM(nim);
+                  const student = dataTablePenerima.find(
+                    (row) => row.mahasiswa.nim === nim
+                  );
+                  setSelectedStudent(student || null);
+                }}
+                sx={{ mb: 2 }}
+              >
+                {dataTablePenerima.map((row) => (
+                  <MenuItem key={row.mahasiswa.nim} value={row.mahasiswa.nim}>
+                    {row.mahasiswa.nim}
+                  </MenuItem>
+                ))}
+              </TextField>
+              <TextField
+                fullWidth
+                label="Nama"
+                value={selectedStudent?.mahasiswa?.nama || ""}
+                InputProps={{
+                  readOnly: true,
+                }}
+                sx={{ mb: 2 }}
+              />
+              <TextField
+                select
+                fullWidth
+                label="Alasan"
+                value={selectedReason}
+                onChange={(e) => setSelectedReason(e.target.value)}
+                sx={{ mb: 2 }}
+              >
+                <MenuItem value="Alpha Melebihi Batas">
+                  Alpha Melebihi Batas
+                </MenuItem>
+                <MenuItem value="Mendapatkan Surat Peringatan">
+                  Mendapatkan Surat Peringatan
+                </MenuItem>
+                <MenuItem value="Keluar/Dikeluarkan dari Kampus">
+                  Keluar/Dikeluarkan dari Kampus
+                </MenuItem>
+              </TextField>
+              <Box
+                {...getRootProps()}
+                sx={{
+                  border: "1px dashed #ccc",
+                  borderRadius: "4px",
+                  p: 2,
+                  textAlign: "center",
+                  mb: 2,
+                  backgroundColor: isDragActive ? "#e1f0ff" : "transparent",
+                  cursor: "pointer",
+                }}
+              >
+                <input {...getInputProps()} />
+                {files.length > 0 ? (
+                  <Typography>{files[0].name} (Uploaded)</Typography>
+                ) : (
+                  <Typography variant="body2" color="textSecondary">
+                    {isDragActive
+                      ? "Drop the file here..."
+                      : "Drag & drop a file to attach it, or click to browse"}
+                  </Typography>
+                )}
+              </Box>
+              <Button
+                variant="contained"
+                fullWidth
+                onClick={handleCloseModal}
+                disabled={files.length === 0}
+              >
+                Submit
+              </Button>
+            </Box>
+          </Box>
+        </Modal>
+
         <Box sx={{ mt: 3 }}>
           <Typography variant="h4">List Donatur</Typography>
         </Box>
@@ -502,10 +686,10 @@ function LaporanRekapitulasiBeasiswa() {
           onPageChange={handleChangePage}
           rowsPerPage={rowsPerPage}
           onRowsPerPageChange={handleChangeRowsPerPage}
-        ></TablePagination>
+        />
         <Box>
           {infoDana.map((info, index) => (
-            <Box>
+            <Box key={index}>
               <Typography>Saldo awal : {info.saldo_awal}</Typography>
               <Typography>Saldo akhir : {info.saldo_akhir}</Typography>
               <Typography>Total Pemasukan : {info.total_pemasukan}</Typography>
