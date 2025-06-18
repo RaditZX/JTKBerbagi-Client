@@ -2,7 +2,7 @@ import { Typography, Container, Box, Button } from "@mui/material";
 
 function FinishRedirect() {
   const handleBackToHome = () => {
-    window.location.href = '/form-donasi';
+    window.location.href = 'http://localhost:3000/beranda';
   };
 
   return (

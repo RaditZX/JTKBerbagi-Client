@@ -1,11 +1,16 @@
 import { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import {
   Typography,
+  TextField,
   TextField,
   Container,
   Card,
   CardContent,
+  Card,
+  CardContent,
   Box,
+  Button,
   Button,
   Stepper,
   Step,
@@ -20,8 +25,17 @@ import {
   DialogContent,
   DialogContentText,
   DialogActions,
+  Snackbar,
+  Alert,
+  CircularProgress,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
 } from "@mui/material";
 import { styled } from "@mui/system";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
 const CustomStepIconRoot = styled("div")(({ theme, ownerState }) => ({
@@ -31,11 +45,10 @@ const CustomStepIconRoot = styled("div")(({ theme, ownerState }) => ({
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
-  border: `2px solid ${
-    ownerState.completed || ownerState.active
+  border: `2px solid ${ownerState.completed || ownerState.active
       ? theme.palette.primary.main
       : theme.palette.grey[400]
-  }`,
+    }`,
   backgroundColor:
     ownerState.completed || ownerState.active
       ? theme.palette.primary.main
@@ -77,6 +90,10 @@ const CustomConnector = styled(StepConnector)(({ theme }) => ({
 const steps = ["Data Donatur", "Detail Donasi"];
 
 function FormulirDonasi() {
+  const { state } = useLocation();
+  const penggalanganDanaId = state?.id || null;
+  const judul = state?.judul || "Donasi";
+
   const [step, setStep] = useState(0);
   const [formData, setFormData] = useState({
     namaDonatur: "",
@@ -105,11 +122,16 @@ function FormulirDonasi() {
   })}`;
 
   useEffect(() => {
+    console.log('Received state:', { penggalanganDanaId, judul });
+  }, [penggalanganDanaId, judul]);   
+
+  useEffect(() => {
     const script = document.createElement("script");
     script.src = "https://app.sandbox.midtrans.com/snap/snap.js";
     script.setAttribute(
       "data-client-key",
-      process.env.REACT_APP_MIDTRANS_CLIENT_KEY || "SB-Mid-client-QHKjxlLz91qK4Cg6"
+      process.env.REACT_APP_MIDTRANS_CLIENT_KEY ||
+      "SB-Mid-client-QHKjxlLz91qK4Cg6"
     );
     document.body.appendChild(script);
     return () => {
@@ -217,6 +239,19 @@ function FormulirDonasi() {
     const newErrors = {};
 
     if (step === 0) {
+      // Validate penggalanganDanaId
+      if (!penggalanganDanaId) {
+        setSnackbarSeverity("error");
+        setSnackbarMessage("ID penggalangan dana tidak ditemukan.");
+        setOpenSnackbar(true);
+        setIsLoading(false);
+        return;
+      }
+
+      console.log('penggalangan_dana_id:', penggalanganDanaId);
+      console.log('judul:', judul);
+
+
       if (!formData.namaDonatur) {
         newErrors.namaDonatur = "Nama donatur harus diisi";
         hasError = true;
@@ -256,7 +291,7 @@ function FormulirDonasi() {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-              id: 1,
+              id: penggalanganDanaId,
               nama: formData.namaDonatur,
               nomor_telepon: formData.noTelepon,
               nominal_donasi: Number(formData.nominalDonasi),
@@ -282,7 +317,10 @@ function FormulirDonasi() {
         setIsLoading(false);
 
         if (data.data.midtrans_token && window.snap) {
-          console.log("Initiating Snap payment with token:", data.data.midtrans_token);
+          console.log(
+            "Initiating Snap payment with token:",
+            data.data.midtrans_token
+          );
           window.snap.pay(data.data.midtrans_token, {
             onSuccess: (result) => {
               console.log("onSuccess triggered:", result);
@@ -460,7 +498,7 @@ function FormulirDonasi() {
               fontSize: "24px",
             }}
           >
-            Pembayaran Donasi
+            Pembayaran Donasi - {judul || "Penggalangan Dana"}
           </Typography>
         </Box>
 
@@ -489,6 +527,44 @@ function FormulirDonasi() {
       </Box>
 
       <Container maxWidth="sm">
+        {step === 0 && renderDataDonaturSection()}
+        {step === 1 && renderDetailDonasiSection()}
+
+        <Snackbar
+          open={openSnackbar}
+          autoHideDuration={3000}
+          onClose={() => setOpenSnackbar(false)}
+        >
+          <Alert
+            severity={snackbarSeverity}
+            onClose={() => setOpenSnackbar(false)}
+          >
+            {snackbarMessage}
+          </Alert>
+        </Snackbar>
+
+        <Dialog
+          open={openConfirmBack}
+          onClose={() => setOpenConfirmBack(false)}
+        >
+          <DialogTitle>Konfirmasi</DialogTitle>
+          <DialogContent>
+            <DialogContentText>
+              {step === 0
+                ? "Data nama dan telepon yang telah diisi akan dihapus. Yakin ingin kembali?"
+                : "Data nominal yang telah diisi akan dihapus. Yakin ingin kembali?"}
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setOpenConfirmBack(false)}>Batal</Button>
+            <Button onClick={() => confirmBack(true)} color="error">
+              Hapus Data & Kembali
+            </Button>
+            <Button onClick={() => confirmBack(false)} color="primary">
+              Simpan Data & Kembali
+            </Button>
+          </DialogActions>
+        </Dialog>
         {step === 0 && renderDataDonaturSection()}
         {step === 1 && renderDetailDonasiSection()}
 

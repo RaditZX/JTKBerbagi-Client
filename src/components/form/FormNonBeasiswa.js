@@ -7,6 +7,8 @@ import TimelineContent from '@mui/lab/TimelineContent';
 import TimelineDot from '@mui/lab/TimelineDot';
 import { useState } from "react";
 
+import AutoComplete from "../molekul/autocomplete/AutoComplete";
+
 function FormulirNonBeasiswa() {
 
 	const [namaPenanggungJawab, setNamaPenanggungJawab] = useState('');
@@ -26,19 +28,39 @@ function FormulirNonBeasiswa() {
 	const [nomorRekening, setNomorRekening] = useState('');
 
 	const handleNamaPenanggungJawabChange = (val) => {
-		setNamaPenanggungJawab(val)
+		if (typeof val === 'object' && val !== null) {
+			setNamaPenanggungJawab(val.nama || '');
+			setNoIdentitasPenanggungJawab(val.nomor_induk || '');
+		} else {
+			setNamaPenanggungJawab(val); // allow manual input
+		}
 	}
 	const handleNoIdentitasPenanggungJawabChange = (val) => {
-		setNoIdentitasPenanggungJawab(val)
+		if (typeof val === 'object' && val !== null) {
+			setNoIdentitasPenanggungJawab(val.nomor_induk || '');
+			setNamaPenanggungJawab(val.nama || '');
+		} else {
+			setNoIdentitasPenanggungJawab(val); // allow manual input
+		}
 	}
 	const handleNoTeleponPenanggungJawabChange = (val) => {
 		setNoTeleponPenanggungJawab(val)
 	}
 	const handleNamaPenerimaChange = (val) => {
-		setNamaPenerima(val)
+		if (typeof val === 'object' && val !== null) {
+			setNamaPenerima(val.nama || '');
+			setNoIdentitasPenerima(val.nomor_induk || '');
+		} else {
+			setNamaPenerima(val); // allow manual input
+		}
 	}
 	const handleNoIdentitasPenerimaChange = (val) => {
-		setNoIdentitasPenerima(val)
+		if (typeof val === 'object' && val !== null) {
+			setNoIdentitasPenerima(val.nomor_induk || '');
+			setNamaPenerima(val.nama || '');
+		} else {
+			setNoIdentitasPenerima(val.nomor_induk || '');
+		}
 	}
 	const handleNoTeleponPenerimaChange = (val) => {
 		setNoTeleponPenerima(val)
@@ -130,15 +152,15 @@ function FormulirNonBeasiswa() {
 						}}
 					>
 						<TimelineItem>
-							<TimelineSeparator>
+							{/* <TimelineSeparator>
 								<TimelineDot color="error" variant="outlined" />
 								<TimelineConnector />
-							</TimelineSeparator>
+							</TimelineSeparator> */}
 							<TimelineContent sx={{ width: 'max-content' }}><Typography variant='h3' sx={{ fontWeight: 'bold' }}>Pengajuan Bantuan Dana</Typography></TimelineContent>
 						</TimelineItem>
 						<TimelineItem>
 							<TimelineSeparator>
-								<TimelineDot />
+								<TimelineDot color="info" variant="outlined"/>
 								<TimelineConnector />
 							</TimelineSeparator>
 							<TimelineContent variant='h4' sx={{ width: 'max-content', fontWeight: '0' }}>Penanggung Jawab</TimelineContent>
@@ -168,9 +190,11 @@ function FormulirNonBeasiswa() {
 				<Box sx={{ minWidth: '50%', display: 'flex', flexDirection: 'column', mt: 4 }}>
 					<Typography variant='h3' sx={{ fontWeight: 'bold' }}>Identitas Penanggung Jawab</Typography>
 					<Typography variant='body1' sx={{ mt: 3, color: '#636E72', fontWeight: 'bold' }} >Nama Penanggung Jawab</Typography>
-					<TextField variant="outlined" size="small" label='cth: John Doe' onChange={(val) => { handleNamaPenanggungJawabChange(val.target.value) }}></TextField>
+					{/* <TextField variant="outlined" size="small" label='cth: John Doe' onChange={(val) => { handleNamaPenanggungJawabChange(val.target.value) }}></TextField> */}
+					<AutoComplete onChange={handleNamaPenanggungJawabChange} placeholder='cth: John Doe' textFieldLabel='cth: John' tableName='civitas_akademika' columnName='nama' suggestionDisplayField="nama" suggestionValueField="nama" value={namaPenanggungJawab}/>
 					<Typography variant='body1' sx={{ mt: 2, color: '#636E72', fontWeight: 'bold' }}>NIM/NIP</Typography>
-					<TextField variant="outlined" size="small" label='Pilih NIM' onChange={(val) => { handleNoIdentitasPenanggungJawabChange(val.target.value) }}></TextField>
+					{/* <TextField variant="outlined" size="small" label='Pilih NIM' onChange={(val) => { handleNoIdentitasPenanggungJawabChange(val.target.value) }}></TextField> */}
+					<AutoComplete onChange={handleNoIdentitasPenanggungJawabChange} placeholder='cth: 231511000' textFieldLabel='cth: 231511000' tableName='civitas_akademika' columnName='nomor_induk' suggestionDisplayField="nomor_induk" suggestionValueField="nomor_induk" value={noIdentitasPenanggungJawab}/>
 					<Typography variant='body1' sx={{ mt: 2, color: '#636E72', fontWeight: 'bold' }}>Nomor Telepon</Typography>
 					<TextField variant="outlined" size="small" label='cth: 082121445524' onChange={(val) => { handleNoTeleponPenanggungJawabChange(val.target.value) }}></TextField>
 					<div>
@@ -192,10 +216,10 @@ function FormulirNonBeasiswa() {
 						}}
 					>
 						<TimelineItem>
-							<TimelineSeparator>
+							{/* <TimelineSeparator>
 								<TimelineDot color="error" variant="outlined" />
 								<TimelineConnector />
-							</TimelineSeparator>
+							</TimelineSeparator> */}
 							<TimelineContent sx={{ width: 'max-content' }}><Typography variant='h3' sx={{ fontWeight: 'bold' }}>Pengajuan Bantuan Dana</Typography></TimelineContent>
 						</TimelineItem>
 						<TimelineItem>
@@ -207,7 +231,7 @@ function FormulirNonBeasiswa() {
 						</TimelineItem>
 						<TimelineItem>
 							<TimelineSeparator>
-								<TimelineDot />
+								<TimelineDot color="info" variant="outlined"/>
 								<TimelineConnector />
 							</TimelineSeparator>
 							<TimelineContent variant='h4' sx={{ width: 'max-content', fontWeight: '0' }}>Calon Penerima Bantuan Dana</TimelineContent>
@@ -241,9 +265,11 @@ function FormulirNonBeasiswa() {
 						}
 					</TextField>
 					<Typography variant='body1' sx={{ mt: 2, color: '#636E72', fontWeight: 'bold' }}>Nama Penerima</Typography>
-					<TextField variant="outlined" size="small" label='cth: John Doe' onChange={(val) => { handleNamaPenerimaChange(val.target.value) }}></TextField>
+					{/* <TextField variant="outlined" size="small" label='cth: John Doe' onChange={(val) => { handleNamaPenerimaChange(val.target.value) }}></TextField> */}
+					<AutoComplete onChange={handleNamaPenerimaChange} placeholder='cth: John Doe' textFieldLabel='cth: John Doe' tableName='civitas_akademika' columnName='nama' suggestionDisplayField="nama" suggestionValueField="nama" value={namaPenerima}/>
 					<Typography variant='body1' sx={{ mt: 2, color: '#636E72', fontWeight: 'bold' }}>NIM/NIP</Typography>
-					<TextField variant="outlined" size="small" label='Pilih NIM' onChange={(val) => { handleNoIdentitasPenerimaChange(val.target.value) }}></TextField>
+					{/* <TextField variant="outlined" size="small" label='Pilih NIM' onChange={(val) => { handleNoIdentitasPenerimaChange(val.target.value) }}></TextField> */}
+					<AutoComplete onChange={handleNoIdentitasPenerimaChange} placeholder='cth: 231511000' textFieldLabel='cth: 231511000' tableName='civitas_akademika' columnName='nomor_induk' suggestionDisplayField="nomor_induk" suggestionValueField="nomor_induk" value={noIdentitasPenerima}/>
 					<Typography variant='body1' sx={{ mt: 2, color: '#636E72', fontWeight: 'bold' }}>Nomor Telepon</Typography>
 					<TextField variant="outlined" size="small" label='cth: 082121445524' onChange={(val) => { handleNoTeleponPenerimaChange(val.target.value) }}></TextField>
 					<div>
@@ -266,9 +292,9 @@ function FormulirNonBeasiswa() {
 	const formPersyaratanBencana = () => {
 		return (
 			<Box sx={{ minWidth: '50%', display: 'flex', flexDirection: 'column' }}>
-				<Typography variant='body1' sx={{ mt: 2, color: '#636E72', fontWeight: 'bold' }}>Riwayat Dampak Bencana</Typography>
+				<Typography variant='body1' sx={{ mt: 2, color: '#636E72', fontWeight: 'bold' }}>Foto Bukti Butuh Bantuan</Typography>
 				<TextField type="file" variant="outlined" size="small" onChange={(val) => { handleDokumenBantuanChange(val.target.value) }}></TextField>
-				<Typography variant="caption" sx={{ color: 'red' }}>*Gambar barang/bangunan yang terkena dampak bencana</Typography>
+				{/* <Typography variant="caption" sx={{ color: 'red' }}>*Gambar barang/bangunan yang terkena dampak bencana</Typography> */}
 			</Box>
 		)
 	}
@@ -284,10 +310,10 @@ function FormulirNonBeasiswa() {
 						}}
 					>
 						<TimelineItem>
-							<TimelineSeparator>
+							{/* <TimelineSeparator>
 								<TimelineDot color="error" variant="outlined" />
 								<TimelineConnector />
-							</TimelineSeparator>
+							</TimelineSeparator> */}
 							<TimelineContent sx={{ width: 'max-content' }}><Typography variant='h3' sx={{ fontWeight: 'bold' }}>Pengajuan Bantuan Dana</Typography></TimelineContent>
 						</TimelineItem>
 						<TimelineItem>
@@ -306,7 +332,7 @@ function FormulirNonBeasiswa() {
 						</TimelineItem>
 						<TimelineItem>
 							<TimelineSeparator>
-								<TimelineDot />
+								<TimelineDot color="info" variant="outlined"/>
 								<TimelineConnector />
 							</TimelineSeparator>
 							<TimelineContent variant='h4'>Persyaratan</TimelineContent>
@@ -350,10 +376,10 @@ function FormulirNonBeasiswa() {
 						}}
 					>
 						<TimelineItem>
-							<TimelineSeparator>
+							{/* <TimelineSeparator>
 								<TimelineDot color="error" variant="outlined" />
 								<TimelineConnector />
-							</TimelineSeparator>
+							</TimelineSeparator> */}
 							<TimelineContent sx={{ width: 'max-content' }}><Typography variant='h3' sx={{ fontWeight: 'bold' }}>Pengajuan Bantuan Dana</Typography></TimelineContent>
 						</TimelineItem>
 						<TimelineItem>
@@ -380,7 +406,7 @@ function FormulirNonBeasiswa() {
 						</TimelineItem>
 						<TimelineItem>
 							<TimelineSeparator>
-								<TimelineDot />
+								<TimelineDot color="info" variant="outlined"/>
 							</TimelineSeparator>
 							<TimelineContent variant='h4'>Informasi Lainnya</TimelineContent>
 						</TimelineItem>

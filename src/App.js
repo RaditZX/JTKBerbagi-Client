@@ -15,7 +15,7 @@ import PenerimaBeasiswa from "./views_adm/PenerimaBeasiswa";
 import PenerimaNonBeasiswa from "./views_adm/PenerimaNonBeasiswa";
 import Layout from "./components/layout";
 import RekapitulasiDana from "./views_user/RekapitulasiDana";
-
+import FinishRedirect from './components/form/FinishRedirect';
 import LayoutUser from "./components/layout_user";
 import LaporanRekapitulasiDonasi from "./views_adm/DaftarDonasi";
 import FormulirDonasi from "./components/form/FormDonasi";
@@ -106,6 +106,7 @@ function App() {
             element={<DaftarPenggalanganDana />}
           />
           <Route path="/form-donasi" element={<FormulirDonasi />} />
+          <Route path="/finish-redirect" element={<FinishRedirect />} />
           <Route path="/form-beasiswa" element={<FormulirBeasiswa />} />
           <Route path="/form-nonbeasiswa" element={<FormulirNonBeasiswa />} />
           <Route
