@@ -69,6 +69,8 @@ function LaporanRekapitulasiBeasiswa() {
     const [openModal, setOpenModal] = useState(false);
     const [selectedStudent, setSelectedStudent] = useState(null);
     const [files, setFiles] = useState([]);
+    const [selectedReason, setSelectedReason] = useState('');
+    const [selectedNIM, setSelectedNIM] = useState('');
 
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
@@ -89,9 +91,14 @@ function LaporanRekapitulasiBeasiswa() {
         setBatch(event.target.value);
     };
 
-    const handleOpenModal = () => {
+
+    const handleOpenModal = (row = null) => {
+    if (row) {
+        setSelectedStudent(row);
+    } else {
         setSelectedStudent();
-        setOpenModal(true);
+    }
+    setOpenModal(true);
     };
 
     const handleCloseModal = () => {
@@ -118,7 +125,6 @@ function LaporanRekapitulasiBeasiswa() {
         { title: 'Nama Pemilik Rekening', id: 'nama_pemilik_rekening', parentId: 'rekening_bank' },
     ];
 
-    // Drag and Drop functionality
     const onDrop = useCallback((acceptedFiles) => {
         setFiles(acceptedFiles.map(file => Object.assign(file, {
             preview: URL.createObjectURL(file)
@@ -131,12 +137,11 @@ function LaporanRekapitulasiBeasiswa() {
             'application/pdf': ['.pdf'],
             'image/jpeg': ['.jpg', '.jpeg'],
             'image/png': ['.png'],
-        }, // Accept only PDF, JPG, and PNG files
-        maxFiles: 1, // Limit to one file
+        },
+        maxFiles: 1,
     });
 
     useEffect(() => {
-        // Cleanup object URLs
         return () => files.forEach(file => URL.revokeObjectURL(file.preview));
     }, [files]);
 
@@ -351,9 +356,9 @@ function LaporanRekapitulasiBeasiswa() {
                 </Box>
             </Box>
             <Box sx={{ mt: 2 }}>
-                {/* <Button variant="contained" onClick={handleOpenModal} sx={{ mb: 2 }}>
+                {/* {<Button variant="contained" onClick={handleOpenModal} sx={{ mb: 2 }}>
                     Open Modal for Testing
-                </Button> */}
+                </Button>} */}
 
                 <Box>
                     <TableContainer component={Paper}>
@@ -450,22 +455,29 @@ function LaporanRekapitulasiBeasiswa() {
                                 select
                                 fullWidth
                                 label="NIM"
-                                value={selectedStudent?.mahasiswa?.nim || ''}
-                                InputProps={{
-                                    readOnly: true,
+                                value={selectedNIM || selectedStudent?.mahasiswa?.nim || ''}
+                                onChange={(e) => {
+                                const nim = e.target.value;
+                                setSelectedNIM(nim);
+                                const student = dataTablePenerima.find(
+                                    (row) => row.mahasiswa.nim === nim
+                                );
+                                setSelectedStudent(student || null);
                                 }}
                                 sx={{ mb: 2 }}
                             >
-                                <MenuItem value={selectedStudent?.mahasiswa?.nim || ''}>
-                                    {selectedStudent?.mahasiswa?.nim || ''}
+                                {dataTablePenerima.map((row) => (
+                                <MenuItem key={row.mahasiswa.nim} value={row.mahasiswa.nim}>
+                                    {row.mahasiswa.nim}
                                 </MenuItem>
+                                ))}
                             </TextField>
                             <TextField
                                 fullWidth
                                 label="Nama"
                                 value={selectedStudent?.mahasiswa?.nama || ''}
                                 InputProps={{
-                                    readOnly: true,
+                                readOnly: true,
                                 }}
                                 sx={{ mb: 2 }}
                             />
@@ -473,9 +485,10 @@ function LaporanRekapitulasiBeasiswa() {
                                 select
                                 fullWidth
                                 label="Alasan"
-                                defaultValue=""
+                                value={selectedReason}
+                                onChange={(e) => setSelectedReason(e.target.value)}
                                 sx={{ mb: 2 }}
-                            >
+                                >
                                 <MenuItem value="Alpha Melebihi Batas">Alpha Melebihi Batas</MenuItem>
                                 <MenuItem value="Mendapatkan Surat Peringatan">Mendapatkan Surat Peringatan</MenuItem>
                                 <MenuItem value="Keluar/Dikeluarkan dari Kampus">Keluar/Dikeluarkan dari Kampus</MenuItem>
