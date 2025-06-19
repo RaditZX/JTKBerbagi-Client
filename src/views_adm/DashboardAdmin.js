@@ -190,7 +190,6 @@ function Dashboard() {
 
 	const { getRootProps, getInputProps, isDragActive } = useDropzone({
 		accept: {
-		'application/vnd.ms-excel': ['.xls'],
 		'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': ['.xlsx'],
 		},
 		onDrop: (acceptedFiles) => {
@@ -219,10 +218,10 @@ function Dashboard() {
 		}
 
 		// Validasi ekstensi file
-		const validExtensions = ['.xls', '.xlsx'];
+		const validExtensions = ['.xlsx'];
 		const fileExtension = uploadedFile.name.slice(((uploadedFile.name.lastIndexOf('.') - 1) >>> 0) + 2).toLowerCase();
 		if (!validExtensions.includes(`.${fileExtension}`)) {
-		setUploadStatus({ type: 'error', message: 'File harus berupa .xls atau .xlsx.' });
+		setUploadStatus({ type: 'error', message: 'File harus berupa atau .xlsx.' });
 		return;
 		}
 
@@ -554,11 +553,11 @@ function Dashboard() {
 								<input {...getInputProps()} />
 								<CloudUploadIcon sx={{ fontSize: 40, color: '#1559E6', mb: 1 }} />
 								{isDragActive ? (
-								<Typography>Drop the file here...</Typography>
+								<Typography>Letakkan berkas di sini...</Typography>
 								) : uploadedFile ? (
 								<Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
 									<Typography sx={{ mr: 1 }}>
-									Selected file: {uploadedFile.name}
+									Berkas yang diunggah: {uploadedFile.name}
 									</Typography>
 									<IconButton onClick={handleRemoveFile} size="small">
 									<CancelIcon sx={{ color: '#1559E6' }} />
@@ -566,7 +565,7 @@ function Dashboard() {
 								</Box>
 								) : (
 								<Typography>
-									Drag and drop an Excel file (.xls, .xlsx) here, or click to select a file
+									Seret dan lepaskan berkas Excel (.xlsx) di sini, atau klik di sini untuk mengunggah berkas
 								</Typography>
 								)}
 							</Box>
