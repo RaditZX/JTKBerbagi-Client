@@ -15,6 +15,7 @@ import PenerimaBeasiswa from './views_adm/PenerimaBeasiswa'
 import PenerimaNonBeasiswa from './views_adm/PenerimaNonBeasiswa'
 import Layout from './components/layout';
 import RekapitulasiDana from './views_user/RekapitulasiDana';
+import DetailPenggalanganDanaBerlangsung from './views_adm/DetailPenggalanganDanaBerlangsung';
 
 import LayoutUser from './components/layout_user';
 import LaporanRekapitulasiDonasi from './views_adm/DaftarDonasi';
@@ -46,6 +47,7 @@ function App() {
 					<Route path='/rekapitulasi-dana' element={<LaporanRekapitulasiBeasiswa />} />
 					<Route path='/rekapitulasi-dana/non-beasiswa' element={<LaporanRekapitulasiNonBeasiswa />} />
 					<Route path='/rekapitulasi-donasi' element={<LaporanRekapitulasiDonasi />} />
+					<Route path='/detail-bantuan-dana' element={<DetailPenggalanganDanaBerlangsung />} />
 				</Route>
 				<Route path='/' element={<Layout isPenanggungJawabJtkBerbagi={true} isPenanggungJawabPihakJurusan={true} isLogin={localStorage.getItem("token") !== null}/>}>
 					<Route path='' element={<Dashboard />} />
