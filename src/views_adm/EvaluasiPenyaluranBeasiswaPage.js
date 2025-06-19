@@ -78,23 +78,23 @@ function EvaluasiPenyaluranBeasiswaPage() {
     return () => files.forEach(file => URL.revokeObjectURL(file.preview));
   }, [files]);
 
-  // Fetch data from GET /evaluasipenyaluranbeasiswa
-  const fetchEvaluasiData = async () => {
+    // Fetch data from GET /evaluasipenyaluranbeasiswa
+    const fetchEvaluasiData = async () => {
     try {
-      const response = await fetch('http://localhost:8000/v1/evaluasipenyaluranbeasiswa', {
+        const response = await fetch('http://localhost:8000/v1/rekapitulasi/evaluasipenyaluranbeasiswa', {
         method: 'GET',
         headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-          'Access-Control-Allow-Origin': '*',
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
         },
-      });
-      const data = await response.json();
-      setEvaluasiData(data.data || []);
+        });
+        const data = await response.json();
+        setEvaluasiData(data.data || []);
     } catch (error) {
-      console.error('Error fetching evaluasi data:', error);
+        console.error('Error fetching evaluasi data:', error);
     }
-  };
+    };
+
 
   useEffect(() => {
     fetchEvaluasiData();

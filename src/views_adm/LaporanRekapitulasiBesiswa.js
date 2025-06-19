@@ -19,6 +19,7 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import TablePagination from '@mui/material/TablePagination';
+import { useNavigate } from 'react-router-dom';
 import Modal from '@mui/material/Modal';
 import { useDropzone } from 'react-dropzone'; // Import react-dropzone
 
@@ -54,6 +55,7 @@ const modalStyle = {
 };
 
 function LaporanRekapitulasiBeasiswa() {
+    const navigate = useNavigate();
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(10);
     const [dataTableDonatur, setDataTableDonatur] = useState([]);
@@ -400,9 +402,10 @@ function LaporanRekapitulasiBeasiswa() {
                 </Box>
             </Box>
             <Box sx={{ mt: 2 }}>
-                {<Button variant="contained" onClick={handleOpenModal} sx={{ mb: 2 }}>
-                    Open Modal for Testing
-                </Button>}
+                <Button variant="contained" onClick={() => navigate('/rekapitulasi-dana/hasil-evaluasi')} sx={{ mb: 2 }}>
+                    Hasil Evaluasi
+                </Button>
+
 
                 <Box>
                     <TableContainer component={Paper}>
@@ -452,7 +455,7 @@ function LaporanRekapitulasiBeasiswa() {
                                                 <Button onClick={(val) => { selectPenyaluranDanaBeasiswa(row.bantuan_dana_beasiswa_id, val.target.value) }}>
                                                     <TaskAltIcon sx={{ mr: 2 }} color='primary' />
                                                 </Button>
-                                                <Button onClick={() => handleOpenModal(row)}>
+                                                <Button onClick={(handleOpenModal)}>
                                                     <Typography sx={{ color: 'primary.main' }}>Evaluasi</Typography>
                                                 </Button>
                                             </StyledTableCell>
