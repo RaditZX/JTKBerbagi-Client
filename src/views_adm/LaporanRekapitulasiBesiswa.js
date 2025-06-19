@@ -421,111 +421,139 @@ function LaporanRekapitulasiBeasiswa() {
                     </TableContainer>
                 </Box>
 
+
                 <Modal
-                    open={openModal}
-                    onClose={handleCloseModal}
-                    aria-labelledby="modal-modal-title"
-                    aria-describedby="modal-modal-description"
+                open={openModal}
+                onClose={handleCloseModal}
+                aria-labelledby="modal-modal-title"
+                aria-describedby="modal-modal-description"
                 >
-                    <Box sx={modalStyle}>
-						<Box sx={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
-                            <Button onClick={handleCloseModal}>✕</Button>
-                        </Box>
-                        <Box sx={{ 
-							display: 'flex', 
-							justifyContent: 'space-between', 
-							alignItems: 'center', 
-							backgroundColor: '#1559e6', 
-							p: 2, 
-							borderRadius: 1 
-						}}>
-							<Typography 
-								id="modal-modal-title" 
-								variant="h4" 
-								align='center'
-								component="h1" 
-								sx={{ 
-									color: '#ffffff', 
-									alignItems: 'center'
-								}}
-							>
-								Evaluasi Penyaluran Beasiswa
-							</Typography>
-						</Box>
-                        <Box sx={{ mt: 2 }}>
-                            <TextField
-                                select
-                                fullWidth
-                                label="NIM"
-                                value={selectedNIM || selectedStudent?.mahasiswa?.nim || ''}
-                                onChange={(e) => {
-                                const nim = e.target.value;
-                                setSelectedNIM(nim);
-                                const student = dataTablePenerima.find(
-                                    (row) => row.mahasiswa.nim === nim
-                                );
-                                setSelectedStudent(student || null);
-                                }}
-                                sx={{ mb: 2 }}
-                            >
-                                {dataTablePenerima.map((row) => (
-                                <MenuItem key={row.mahasiswa.nim} value={row.mahasiswa.nim}>
-                                    {row.mahasiswa.nim}
-                                </MenuItem>
-                                ))}
-                            </TextField>
-                            <TextField
-                                fullWidth
-                                label="Nama"
-                                value={selectedStudent?.mahasiswa?.nama || ''}
-                                InputProps={{
-                                readOnly: true,
-                                }}
-                                sx={{ mb: 2 }}
-                            />
-                            <TextField
-                                select
-                                fullWidth
-                                label="Alasan"
-                                value={selectedReason}
-                                onChange={(e) => setSelectedReason(e.target.value)}
-                                sx={{ mb: 2 }}
-                                >
-                                <MenuItem value="Alpha Melebihi Batas">Alpha Melebihi Batas</MenuItem>
-                                <MenuItem value="Mendapatkan Surat Peringatan">Mendapatkan Surat Peringatan</MenuItem>
-                                <MenuItem value="Keluar/Dikeluarkan dari Kampus">Keluar/Dikeluarkan dari Kampus</MenuItem>
-                            </TextField>
-                            <Box
-                                {...getRootProps()}
-                                sx={{
-                                    border: '1px dashed #ccc',
-                                    borderRadius: '4px',
-                                    p: 2,
-                                    textAlign: 'center',
-                                    mb: 2,
-                                    backgroundColor: isDragActive ? '#e1f0ff' : 'transparent',
-                                    cursor: 'pointer',
-                                }}
-                            >
-                                <input {...getInputProps()} />
-                                {files.length > 0 ? (
-                                    <Typography>{files[0].name} (Uploaded)</Typography>
-                                ) : (
-                                    <Typography variant="body2" color="textSecondary">
-                                        {isDragActive ? 'Drop the file here...' : 'Drag & drop a file to attach it, or click to browse'}
-                                    </Typography>
-                                )}
-                            </Box>
-                            <Button
-                                variant="contained"
-                                fullWidth
-                                onClick={handleCloseModal}
-                                disabled={files.length === 0}
-                            >
-                                Submit
-                            </Button>
-                        </Box>
+                <Box sx={modalStyle}>
+                    <Box sx={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
+                    <Button onClick={handleCloseModal}>✕</Button>
                     </Box>
+                    <Box sx={{ 
+                    display: 'flex', 
+                    justifyContent: 'space-between', 
+                    alignItems: 'center', 
+                    backgroundColor: '#1559e6', 
+                    p: 2, 
+                    borderRadius: 1 
+                    }}>
+                    <Typography 
+                        id="modal-modal-title" 
+                        variant="h4" 
+                        align='center'
+                        component="h1" 
+                        sx={{ color: '#ffffff', alignItems: 'center' }}
+                    >
+                        Evaluasi Penyaluran Beasiswa
+                    </Typography>
+                    </Box>
+                    <Box sx={{ mt: 2 }}>
+                    <TextField
+                        select
+                        fullWidth
+                        label="NIM"
+                        value={selectedNIM || selectedStudent?.mahasiswa?.nim || ''}
+                        onChange={(e) => {
+                        const nim = e.target.value;
+                        setSelectedNIM(nim);
+                        const student = dataTablePenerima.find(
+                            (row) => row.mahasiswa.nim === nim
+                        );
+                        setSelectedStudent(student || null);
+                        }}
+                        sx={{ mb: 2 }}
+                    >
+                        {dataTablePenerima.map((row) => (
+                        <MenuItem key={row.mahasiswa.nim} value={row.mahasiswa.nim}>
+                            {row.mahasiswa.nim}
+                        </MenuItem>
+                        ))}
+                    </TextField>
+                    <TextField
+                        fullWidth
+                        label="Nama"
+                        value={selectedStudent?.mahasiswa?.nama || ''}
+                        InputProps={{ readOnly: true }}
+                        sx={{ mb: 2 }}
+                    />
+                    <TextField
+                        select
+                        fullWidth
+                        label="Alasan"
+                        value={selectedReason}
+                        onChange={(e) => setSelectedReason(e.target.value)}
+                        sx={{ mb: 2 }}
+                    >
+                        <MenuItem value="Alpha Melebihi Batas">Alpha Melebihi Batas</MenuItem>
+                        <MenuItem value="Mendapatkan Surat Peringatan">Mendapatkan Surat Peringatan</MenuItem>
+                        <MenuItem value="Keluar/Dikeluarkan dari Kampus">Keluar/Dikeluarkan dari Kampus</MenuItem>
+                    </TextField>
+                    <Box
+                        {...getRootProps()}
+                        sx={{
+                        border: '1px dashed #ccc',
+                        borderRadius: '4px',
+                        p: 2,
+                        textAlign: 'center',
+                        mb: 2,
+                        backgroundColor: isDragActive ? '#e1f0ff' : 'transparent',
+                        cursor: 'pointer',
+                        }}
+                    >
+                        <input {...getInputProps()} />
+                        {files.length > 0 ? (
+                        <Typography>{files[0].name} (Uploaded)</Typography>
+                        ) : (
+                        <Typography variant="body2" color="textSecondary">
+                            {isDragActive ? 'Drop the file here...' : 'Drag & drop a file to attach it, or click to browse'}
+                        </Typography>
+                        )}
+                    </Box>
+                    
+                    <Button
+                    variant="contained"
+                    fullWidth
+                    onClick={async () => {
+                        if (!selectedNIM || !selectedReason || files.length === 0 || !selectedStudent?.bantuan_dana_beasiswa_id) {
+                        alert('Please fill all fields and upload a file, and ensure a valid student is selected.');
+                        return;
+                        }
+
+                        const formData = new FormData();
+                        formData.append('mahasiswa_id', selectedNIM);
+                        formData.append('bantuan_dana_beasiswa_id', selectedStudent.bantuan_dana_beasiswa_id);
+                        formData.append('alasan', selectedReason);
+                        formData.append('dokumen_evaluasi', files[0]);
+                        formData.append('tanggal_evaluasi', new Date().toISOString().split('T')[0]);
+                        formData.append('status_penyaluran', 0); // Mengirim boolean langsung, bukan string
+
+                        try {
+                        const response = await fetch('http://localhost:8000/v1/rekapitulasi/evaluasipenyaluranbeasiswa', {
+                            method: 'POST',
+                            body: formData,
+                        });
+                        const data = await response.json();
+                        console.log('Response from server:', data); // Debug
+                        if (response.ok) {
+                            alert('Evaluation submitted successfully!');
+                            handleCloseModal();
+                        } else {
+                            alert('Failed to submit evaluation: ' + (data.message || 'Unknown error'));
+                        }
+                        } catch (error) {
+                        console.error('Error submitting evaluation:', error);
+                        alert('An error occurred while submitting: ' + error.message);
+                        }
+                    }}
+                    disabled={files.length === 0}
+                    >
+                    Submit
+                    </Button>
+                    </Box>
+                </Box>
                 </Modal>
 
                 <Box sx={{ mt: 3 }}>
