@@ -91,56 +91,14 @@ function LaporanRekapitulasiBeasiswa() {
         setBatch(event.target.value);
     };
 
-    const dummyStudent = {
-    mahasiswa: {
-        nim: "123456789",
-        nama: "John Doe",
-    },
-    bantuan_dana_beasiswa_id: "test-id-001",
-    };
-
     const handleOpenModal = (row = null) => {
     if (row) {
         setSelectedStudent(row);
-    } else {
-        setSelectedStudent(dummyStudent);
     }
     setOpenModal(true);
     };
 
     useEffect(() => {
-    const dummyPenerima = [
-        {
-        mahasiswa: {
-            nim: "123456789",
-            nama: "John Doe",
-            nomor_telepon: "08123456789",
-        },
-        rekening_bank: {
-            nomor_rekening: "987654321",
-            nama_bank: "Bank XYZ",
-            nama_pemilik_rekening: "John Doe",
-        },
-        nominal_penyaluran: [0, 500000, 0],
-        bantuan_dana_beasiswa_id: "test-id-001",
-        },
-        {
-        mahasiswa: {
-            nim: "987654321",
-            nama: "Jane Smith",
-            nomor_telepon: "08987654321",
-        },
-        rekening_bank: {
-            nomor_rekening: "123456789",
-            nama_bank: "Bank ABC",
-            nama_pemilik_rekening: "Jane Smith",
-        },
-        nominal_penyaluran: [1000000, 0, 0],
-        bantuan_dana_beasiswa_id: "test-id-002",
-        },
-    ];
-
-    setDataTablePenerima(dummyPenerima);
     }, []);
 
     const handleCloseModal = () => {
@@ -400,9 +358,9 @@ function LaporanRekapitulasiBeasiswa() {
                 </Box>
             </Box>
             <Box sx={{ mt: 2 }}>
-                {<Button variant="contained" onClick={handleOpenModal} sx={{ mb: 2 }}>
+                {/* {<Button variant="contained" onClick={handleOpenModal} sx={{ mb: 2 }}>
                     Open Modal for Testing
-                </Button>}
+                </Button>} */}
 
                 <Box>
                     <TableContainer component={Paper}>

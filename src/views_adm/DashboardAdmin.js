@@ -246,8 +246,7 @@ function Dashboard() {
 
 	const { getRootProps, getInputProps, isDragActive } = useDropzone({
 		accept: {
-			'application/vnd.ms-excel': ['.xls'],
-			'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': ['.xlsx'],
+		'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': ['.xlsx'],
 		},
 		onDrop: (acceptedFiles) => {
 			setUploadedFile(acceptedFiles[0]);
@@ -273,11 +272,13 @@ function Dashboard() {
 			return;
 		}
 
-		const validExtensions = ['.xls', '.xlsx'];
+
+		// Validasi ekstensi file
+		const validExtensions = ['.xlsx'];
 		const fileExtension = uploadedFile.name.slice(((uploadedFile.name.lastIndexOf('.') - 1) >>> 0) + 2).toLowerCase();
 		if (!validExtensions.includes(`.${fileExtension}`)) {
-			setUploadStatus({ type: 'error', message: 'File harus berupa .xls atau .xlsx.' });
-			return;
+		setUploadStatus({ type: 'error', message: 'File harus berupa atau .xlsx.' });
+		return;
 		}
 
 		setIsUploading(true);
@@ -616,8 +617,22 @@ function Dashboard() {
 									p: 2,
 								}}
 							>
-								<Typography variant="h3" color={'white'}>
-									Import Data Civitas Akademika JTK POLBAN
+								<input {...getInputProps()} />
+								<CloudUploadIcon sx={{ fontSize: 40, color: '#1559E6', mb: 1 }} />
+								{isDragActive ? (
+								<Typography>Letakkan berkas di sini...</Typography>
+								) : uploadedFile ? (
+								<Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+									<Typography sx={{ mr: 1 }}>
+									Berkas yang diunggah: {uploadedFile.name}
+									</Typography>
+									<IconButton onClick={handleRemoveFile} size="small">
+									<CancelIcon sx={{ color: '#1559E6' }} />
+									</IconButton>
+								</Box>
+								) : (
+								<Typography>
+									Seret dan lepaskan berkas Excel (.xlsx) di sini, atau klik di sini untuk mengunggah berkas
 								</Typography>
 							</Box>
 							<Box sx={{ p: 2 }}>
