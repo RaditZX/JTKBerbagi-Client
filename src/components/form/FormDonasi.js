@@ -24,7 +24,6 @@ import {
 } from "@mui/material";
 import { styled } from "@mui/system";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-
 const CustomStepIconRoot = styled("div")(({ theme, ownerState }) => ({
   width: 32,
   height: 32,
@@ -94,6 +93,17 @@ function FormulirDonasi() {
   const [isLoading, setIsLoading] = useState(false);
   const [paymentData, setPaymentData] = useState(null);
   const [openConfirmBack, setOpenConfirmBack] = useState(false);
+
+  const handleSubmit = () => {
+  // Tambahkan logika submit sesuai kebutuhan
+  console.log("Form disubmit!");
+  setSnackbarSeverity("success");
+  setSnackbarMessage("Data berhasil disubmit.");
+  setOpenSnackbar(true);
+
+  // Kembali ke awal
+  setStep(0);
+};
 
   const MIN_DONASI = 10000;
   const MAX_DONASI = 100000000;
@@ -516,6 +526,23 @@ function FormulirDonasi() {
       <Container maxWidth="sm">
         {step === 0 && renderDataDonaturSection()}
         {step === 1 && renderDetailDonasiSection()}
+
+        <Box display="flex" justifyContent="space-between" mt={3}>
+          {step > 0 && (
+            <Button onClick={() => setStep(step - 1)} variant="outlined">
+              Kembali
+            </Button>
+          )}
+          {step < steps.length - 1 ? (
+            <Button onClick={() => setStep(step + 1)} variant="contained">
+              Lanjut
+            </Button>
+          ) : (
+            <Button onClick={handleSubmit} variant="contained" color="primary">
+              Selesai
+            </Button>
+          )}
+        </Box>
 
         <Snackbar
           open={openSnackbar}

@@ -173,7 +173,7 @@ function Dashboard() {
 		setOpenModalGalangDana(true);
 		setOpenModalNonBeasiswa(false);
 	}
-
+	const handleCloseModalNonBeasiswa = () => setOpenModalNonBeasiswa(false);
 	const handleCloseModalGalangDana = () => setOpenModalGalangDana(false);
 	const handleCloseModal = () => setOpenModal(false);
 
@@ -439,20 +439,6 @@ function Dashboard() {
 				console.log(err.message);
 			})
 	}
-	// const importDataCivitasAkademika = async () => {
-	// 	await fetch (
-	// 		'http://localhost:8000/v1/civitas_akademika/importExcelCivitasAkademika',
-	// 		{
-	// 			method: 'POST',
-	// 			headers: {
-	// 				Accept: 'application/json',
-	// 				'Content-Type': 'application/json',
-	// 				'Access-Control-Allow-Origin': '*',
-	// 			},
-	// 			body
-	// 		}
-	// 	)
-	// }
 	const kategoriSelect = [
 		{
 			value: 'Medis',
@@ -669,13 +655,14 @@ function Dashboard() {
 							</Box>
 							<Box sx={{ pt: 2, display: 'flex', justifyContent: 'flex-end' }}>
 								<Button variant='contained' onClick={createPenggalanganDanaBeasiswa}>Submit</Button>
+								<Button variant='outlined' onClick={handleCloseModal} sx={{ ml: 1 }}>Cancel</Button>
 							</Box>
 						</Box>
 					</Box>
 				</Modal>
 				<Modal
 					open={openModalNonBeasiswa}
-					onClose={handleCloseModalGalangDana}
+					onClose={handleCloseModalNonBeasiswa}
 					aria-labelledby="modal-modal-title"
 					aria-describedby="modal-modal-description"
 				>
@@ -691,12 +678,10 @@ function Dashboard() {
 							<Box sx={{ pt: 1, display: 'flex', width: '100%' }}>
 								<Box>
 									<Typography>Nama</Typography>
-									{/* <TextField size='small' variant='outlined' label='cth: Hasbi' sx={{width: '100%'}} onChange={(val) => {handleNamaPenanggungJawabChange(val.target.value)}}/> */}
 									<AutoComplete onChange={handleNamaPenanggungJawabChange} placeholder='cth: Hasbi' textFieldLabel='cth: Hasbi' tableName='civitas_akademika' columnName='nama' suggestionDisplayField='nama' suggestionValueField='nama' value={namaPenanggungJawab}/>
 								</Box>
 								<Box sx={{ ml: 2 }}>
 									<Typography>NIM/NIP</Typography>
-									{/* <TextField size='small' variant='outlined' label='cth: 081424001' sx={{width: '100%'}} onChange={(val) => {handleNomorIndukPenanggungJawabChange(val.target.value)}}/> */}
 									<AutoComplete onChange={handleNomorIndukPenanggungJawabChange} placeholder='cth: 191524024' textFieldLabel='cth: 191524024' tableName='civitas_akademika' columnName='nomor_induk' suggestionDisplayField='nomor_induk' suggestionValueField='nomor_induk' value={nomorIndukPenanggungJawab}/>
 								</Box>
 								<Box sx={{ ml: 2 }}>
@@ -711,12 +696,10 @@ function Dashboard() {
 							<Box sx={{ display: 'flex', mt: 1 }}>
 								<Box>
 									<Typography>Nama</Typography>
-									{/* <TextField size='small' variant='outlined' label='cth: John Doe' sx={{ width: '100%' }} onChange={(val) => {handleNamaPenerimaChange(val.target.value)}}/> */}
 									<AutoComplete onChange={handleNamaPenerimaChange} placeholder='cth: Hasbi' textFieldLabel='cth: Hasbi' tableName='civitas_akademika' columnName='nama' suggestionDisplayField='nama' suggestionValueField='nama' value={namaPenerima}/>
 								</Box>
 								<Box sx={{ml: 2}}>
 									<Typography>NIM/NIP</Typography>
-									{/* <TextField size='small' variant='outlined' label='cth: 191524024' sx={{ width: '100%' }} onChange={(val) => {handleNomorIndukPenerimaChange(val.target.value)}}/> */}
 									<AutoComplete onChange={handleNomorIndukPenerimaChange} placeholder='cth: 231511000' textFieldLabel='cth: 231511000' tableName='civitas_akademika' columnName='nomor_induk' suggestionDisplayField='nomor_induk' suggestionValueField='nomor_induk' value={nomorIndukPenerima}/>	
 								</Box>
 								<Box sx={{ml: 2}}>
@@ -741,13 +724,14 @@ function Dashboard() {
 							</Box>
 							<Box sx={{ pt: 2, display: 'flex', justifyContent: 'flex-end' }}>
 								<Button variant='contained' onClick={handleOpenGalangDana}>Selanjutnya</Button>
+								<Button variant='outlined' onClick={handleCloseModalNonBeasiswa} sx={{ ml: 1 }}>Batal</Button>
 							</Box>
 						</Box>
 					</Box>
 				</Modal>
 				<Modal
 					open={openModalGalangDana}
-					onClose={handleCloseModal}
+					onClose={handleCloseModalGalangDana}
 					aria-labelledby="modal-modal-title"
 					aria-describedby="modal-modal-description"
 				>
@@ -792,10 +776,11 @@ function Dashboard() {
 									<TextField size='small' variant='outlined' label='cth: 5000000' sx={{ width: '100%' }} onChange={(val) => {handleKebutuhanDanaChange(val.target.value)}}/>
 								</Box>
 							</Box>
-						</Box>
-						<Box sx={{ display: 'flex', justifyContent: 'flex-end', pr: 2, pb: 2 }}>
-							<Button variant='contained' onClick={createPenggalanganDanaNonBeasiswa} sx={{ mr: 1 }}>Submit</Button>
-							<Button variant='outlined' onClick={handleOpenNonBeasiswa}>Sebelumnya</Button>
+							<Box sx={{ pt: 2, display: 'flex', justifyContent: 'flex-end' }}>
+								<Button variant='contained' onClick={createPenggalanganDanaNonBeasiswa}>Submit</Button>
+								<Button variant='outlined' onClick={handleOpenNonBeasiswa} sx={{ ml: 1 }}>Sebelumnya</Button>
+								<Button variant='outlined' onClick={handleCloseModalGalangDana} sx={{ ml: 1 }}>Batal</Button>
+							</Box>
 						</Box>
 					</Box>
 				</Modal>
