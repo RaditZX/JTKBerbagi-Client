@@ -26,6 +26,7 @@ import FormulirBeasiswa from "./components/form/FormBeasiswa";
 import FormulirNonBeasiswa from "./components/form/FormNonBeasiswa";
 import FormulirPendaftaranAkun from "./components/form/FormAccount";
 import LoginUser from "./views_user/LoginUser";
+import EvaluasiPenyaluranBeasiswaPage from "./views_adm/EvaluasiPenyaluranBeasiswaPage";
 // import Item from '@mui/material';
 
 function App() {
@@ -81,10 +82,7 @@ function App() {
             path="/rekapitulasi-donasi"
             element={<LaporanRekapitulasiDonasi />}
           />
-          <Route
-            path="/detail-bantuan-dana"
-            element={<DetailPenggalanganDanaBerlangsung />}
-          />
+          <Route path="/rekapitulasi-dana/hasil-evaluasi" element={<EvaluasiPenyaluranBeasiswaPage />} />
         </Route>
 
         {/* Admin layout - Pihak Jurusan */}
