@@ -1,9 +1,9 @@
 import '../App.css';
 import * as React from 'react';
-import Typography from '@mui/material/Typography'
+import Typography from '@mui/material/Typography';
 import ButtonBase from '../components/base/Button';
 import Grid from '@mui/material/Grid';
-import { Box, Container } from '@mui/material';
+import { Box, Container, Fade, CircularProgress, Alert, IconButton } from '@mui/material';
 import CardInfo from '../components/molekul/card/CardInfo';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import Menu from '@mui/material/Menu';
@@ -13,6 +13,15 @@ import Modal from '@mui/material/Modal';
 import TextField from '@mui/material/TextField';
 import Divider from '@mui/material/Divider';
 import { useLocation, Link } from 'react-router-dom';
+
+
+import AutoComplete from '../components/molekul/autocomplete/AutoComplete';
+
+import { useDropzone } from 'react-dropzone';
+import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+import CancelIcon from '@mui/icons-material/Cancel';
+import DownloadIcon from '@mui/icons-material/Download';
+
 // import Item from '@mui/material';
 
 
@@ -27,6 +36,11 @@ function Dashboard() {
 		boxShadow: 24,
 		borderRadius: '4px 4px 4px 4px'
 	}
+
+	const [uploadedFile, setUploadedFile] = React.useState(null);
+	const [isUploading, setIsUploading] = React.useState(false);
+	const [uploadStatus, setUploadStatus] = React.useState(null);
+
 	const [deskripsi, setDeskripsi] = React.useState('');
 	const [jumlahPenerimaBantuan, setJumlahPenerimaBantuan] = React.useState('')
 	const [jumlahDonasi, setJumlahDonasi] = React.useState('')
@@ -37,8 +51,8 @@ function Dashboard() {
 	const [anchorEl, setAnchorEl] = React.useState(null);
 	const [jumlahPengajuan, setJumlahPengajuan] = React.useState('')
 	const [jumlahDana, setJumlahDana] = React.useState('')
-	const [namaPenanggungJawab, setNamaPenanggungJawab] = React.useState([]);
-	const [nomorIndukPenanggungJawab, setNomorIndukPenanggungJawab] = React.useState([]);
+	const [namaPenanggungJawab, setNamaPenanggungJawab] = React.useState('');
+	const [nomorIndukPenanggungJawab, setNomorIndukPenanggungJawab] = React.useState('');
 	const [nomorTeleponPenanggungJawab, setNomorTeleponPenanggungJawab] = React.useState([]);
 	const [nomorRekening, setNomorRekening] = React.useState([]);
 	const [namaPemilikRekening, setNamaPemilikRekening] = React.useState([]);
@@ -46,14 +60,24 @@ function Dashboard() {
 	const [judul, setJudul] = React.useState([]);
 	const [waktuBerakhir, setWaktuBerakhir] = React.useState([]);
 	const [kebutuhanDana, setKebutuhanDana] = React.useState([]);
-	const [namaPenerima, setNamaPenerima] = React.useState([]);
-	const [nomorIndukPenerima, setNomorIndukPenerima] = React.useState([]);
+	const [namaPenerima, setNamaPenerima] = React.useState('');
+	const [nomorIndukPenerima, setNomorIndukPenerima] = React.useState('');
 	const [nomorTeleponPenerima, setNomorTeleponPenerima] = React.useState([]);
 	const [kategori, setKategori] = React.useState([]);
 	const [judulGalangDana, setJudulGalangDana] = React.useState([]);
 	const [targetDana, setTargetDana] = React.useState('');
 	const [targetPenerima, setTargetPenerima] = React.useState('');
 	const [jenis, setJenis] = React.useState('NonBeasiswa');
+
+	const handleOpenImportData = () => {
+		setOpenModalImportData(true);
+	};
+
+	const handleCloseModalImportData = () => {
+		setOpenModalImportData(false);
+		setUploadedFile(null);
+		setUploadStatus(null);
+	};
 
 	const handleJudulGalangDanaChange = (val) => {
 		setJudulGalangDana(val)
@@ -68,10 +92,20 @@ function Dashboard() {
 		setTargetDana(val)
 	}
 	const handleNamaPenanggungJawabChange = (val) => {
-		setNamaPenanggungJawab(val)
+	    if (typeof val === 'object' && val !== null) {
+			setNamaPenanggungJawab(val.nama || '');
+			setNomorIndukPenanggungJawab(val.nomor_induk || '');
+		} else {
+			setNamaPenanggungJawab(val); // allow manual input
+		}
 	}
 	const handleNomorIndukPenanggungJawabChange = (val) => {
-		setNomorIndukPenanggungJawab(val)
+	    if (typeof val === 'object' && val !== null) {
+			setNomorIndukPenanggungJawab(val.nomor_induk || '');
+			setNamaPenanggungJawab(val.nama || '');
+		} else {
+			setNomorIndukPenanggungJawab(val); // allow manual input
+		}
 	}
 	const handleNomorTeleponPenanggungJawabChange = (val) => {
 		setNomorTeleponPenanggungJawab(val)
@@ -92,10 +126,20 @@ function Dashboard() {
 		setKebutuhanDana(val)
 	}
 	const handleNamaPenerimaChange = (val) => {
-		setNamaPenerima(val)
+	    if (typeof val === 'object' && val !== null) {
+			setNamaPenerima(val.nama || '');
+			setNomorIndukPenerima(val.nomor_induk || '');
+		} else {
+			setNamaPenerima(val); // allow manual input
+		}
 	}
 	const handleNomorIndukPenerimaChange = (val) => {
-		setNomorIndukPenerima(val)
+	    if (typeof val === 'object' && val !== null) {
+			setNomorIndukPenerima(val.nomor_induk || '');
+			setNamaPenerima(val.nama || '');
+		} else {
+			setNomorIndukPenerima(val || '');
+		}
 	}
 	const handleNomorTeleponPenerimaChange = (val) => {
 		setNomorTeleponPenerima(val)
@@ -129,13 +173,125 @@ function Dashboard() {
 		setOpenModalGalangDana(true);
 		setOpenModalNonBeasiswa(false);
 	}
-	const handleOpenImportData = () => {
-		setOpenModalImportData(true)
-	}
+	const handleCloseModalNonBeasiswa = () => setOpenModalNonBeasiswa(false);
 	const handleCloseModalGalangDana = () => setOpenModalGalangDana(false);
 	const handleCloseModal = () => setOpenModal(false);
-	const handleCloseModalImportData = () => setOpenModalImportData(false);
 
+	const handleDownloadTemplate = () => {
+		const templateUrl = '../templates/import.xlsx';
+	
+		const link = document.createElement('a');
+		link.href = templateUrl;
+		link.download = 'import.xlsx';
+		document.body.appendChild(link);
+		link.click();
+		document.body.removeChild(link);
+	};
+
+	const { getRootProps, getInputProps, isDragActive } = useDropzone({
+		accept: {
+		'application/vnd.ms-excel': ['.xls'],
+		'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': ['.xlsx'],
+		},
+		onDrop: (acceptedFiles) => {
+		setUploadedFile(acceptedFiles[0]);
+		setUploadStatus(null);
+		},
+		multiple: false,
+	});
+
+	const handleRemoveFile = () => {
+		setUploadedFile(null);
+		setUploadStatus(null);
+	};
+
+	const importDataCivitasAkademika = async () => {
+		if (!uploadedFile) {
+		setUploadStatus({ type: 'error', message: 'Silakan unggah file terlebih dahulu.' });
+		return;
+		}
+
+		// Validasi ukuran file (maksimum 5MB)
+		const maxSize = 5 * 1024 * 1024; // 5MB dalam byte
+		if (uploadedFile.size > maxSize) {
+		setUploadStatus({ type: 'error', message: 'Ukuran file melebihi 5MB. Silakan unggah file yang lebih kecil.' });
+		return;
+		}
+
+		// Validasi ekstensi file
+		const validExtensions = ['.xls', '.xlsx'];
+		const fileExtension = uploadedFile.name.slice(((uploadedFile.name.lastIndexOf('.') - 1) >>> 0) + 2).toLowerCase();
+		if (!validExtensions.includes(`.${fileExtension}`)) {
+		setUploadStatus({ type: 'error', message: 'File harus berupa .xls atau .xlsx.' });
+		return;
+		}
+
+		setIsUploading(true);
+		setUploadStatus(null);
+
+		const formData = new FormData();
+		formData.append('file', uploadedFile);
+
+		try {
+		const controller = new AbortController();
+		const timeoutId = setTimeout(() => controller.abort(), 30000); // Timeout 30 detik
+
+		const response = await fetch(
+			'http://localhost:8000/v1/civitas_akademika/importExcelCivitasAkademika',
+			{
+			method: 'POST',
+			headers: {
+				Accept: 'application/json',
+				'Access-Control-Allow-Origin': '*',
+			},
+			body: formData,
+			signal: controller.signal,
+			}
+		);
+
+		clearTimeout(timeoutId);
+
+		const data = await response.json();
+
+		if (!response.ok) {
+			if (data.response_message && data.response_message.includes('nomor_induk')) {
+			setUploadStatus({
+				type: 'error',
+				message: 'Gagal memperbarui data. Silakan coba lagi atau periksa format file pada nomor induk anda.',
+			});
+			} else if (data.response_message && data.response_message.includes('nama')) {
+			setUploadStatus({
+				type: 'error',
+				message: 'Gagal memperbarui data. Silakan periksa kolom nama pada file Anda.',
+			});
+			} else {
+			setUploadStatus({
+				type: 'error',
+				message: data.response_message || 'Gagal memperbarui data. Silakan coba lagi atau periksa format file Anda.',
+			});
+			}
+		} else {
+			setUploadStatus({ type: 'success', message: 'Data berhasil diperbarui!' });
+			setTimeout(() => {
+			handleCloseModalImportData();
+			}, 1500);
+		}
+		} catch (err) {
+		if (err.name === 'AbortError') {
+			setUploadStatus({
+			type: 'error',
+			message: 'Waktu koneksi habis. Silakan coba lagi nanti.',
+			});
+		} else {
+			setUploadStatus({
+			type: 'error',
+			message: 'Terjadi kesalahan saat mengunggah file. Silakan coba lagi nanti.',
+			});
+		}
+		} finally {
+		setIsUploading(false);
+		}
+	};
 	const getTotalCalonPengajuan = async () => {
 		await fetch(
 			'http://localhost:8000/v1/pengajuan/pengajuan_bantuan/getTotalCalonPengajuan',
@@ -283,20 +439,6 @@ function Dashboard() {
 				console.log(err.message);
 			})
 	}
-	// const importDataCivitasAkademika = async () => {
-	// 	await fetch (
-	// 		'http://localhost:8000/v1/civitas_akademika/importExcelCivitasAkademika',
-	// 		{
-	// 			method: 'POST',
-	// 			headers: {
-	// 				Accept: 'application/json',
-	// 				'Content-Type': 'application/json',
-	// 				'Access-Control-Allow-Origin': '*',
-	// 			},
-	// 			body
-	// 		}
-	// 	)
-	// }
 	const kategoriSelect = [
 		{
 			value: 'Medis',
@@ -373,23 +515,107 @@ function Dashboard() {
 						<MenuItem onClick={handleOpen}>Beasiswa</MenuItem>
 						<MenuItem onClick={handleOpenNonBeasiswa}>Non Beasiswa</MenuItem>
 					</Menu>
-					<Button variant='outlined' sx={{ ml: 2}} onClick={handleOpenImportData}>
+					<Button variant="outlined" sx={{ ml: 2 }} onClick={handleOpenImportData}>
 						<Typography>Import Data</Typography>
-					</Button>
-				</Box>
-				<Modal
-					open={openModalImportData}
-					onClose={handleCloseModalImportData}
-				>
-					<Box sx={styleBox}>
-						<Box sx={{ backgroundColor: '#1559E6', borderRadius: '4px 4px 0 0', p: 2 }}>
-							<Typography variant='h3' color={'white'}>Import Data Civitas Akademika JTK POLBAN</Typography>
-						</Box>
-						<Box>
-							<TextField type='file'></TextField>
-						</Box>
+						</Button>
 					</Box>
-				</Modal>
+			
+					{/* Modal Impor Data dengan Fitur yang Ditingkatkan */}
+					<Modal open={openModalImportData} onClose={handleCloseModalImportData}>
+						<Fade in={openModalImportData}>
+						<Box sx={styleBox}>
+							<Box
+							sx={{
+								backgroundColor: '#1559E6',
+								borderRadius: '4px 4px 0 0',
+								p: 2,
+							}}
+							>
+							<Typography variant="h3" color={'white'}>
+								Import Data Civitas Akademika JTK POLBAN
+							</Typography>
+							</Box>
+							<Box sx={{ p: 2 }}>
+							<Box
+								{...getRootProps()}
+								sx={{
+								border: '2px dashed #1559E6',
+								borderRadius: '4px',
+								p: 4,
+								textAlign: 'center',
+								bgcolor: isDragActive ? '#e3f2fd' : '#f5f5f5',
+								cursor: 'pointer',
+								transition: 'background-color 0.3s ease',
+								'&:hover': {
+									bgcolor: '#e3f2fd',
+								},
+								}}
+							>
+								<input {...getInputProps()} />
+								<CloudUploadIcon sx={{ fontSize: 40, color: '#1559E6', mb: 1 }} />
+								{isDragActive ? (
+								<Typography>Drop the file here...</Typography>
+								) : uploadedFile ? (
+								<Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+									<Typography sx={{ mr: 1 }}>
+									Selected file: {uploadedFile.name}
+									</Typography>
+									<IconButton onClick={handleRemoveFile} size="small">
+									<CancelIcon sx={{ color: '#1559E6' }} />
+									</IconButton>
+								</Box>
+								) : (
+								<Typography>
+									Drag and drop an Excel file (.xls, .xlsx) here, or click to select a file
+								</Typography>
+								)}
+							</Box>
+			
+							{uploadStatus && (
+								<Fade in={!!uploadStatus}>
+								<Box sx={{ mt: 2 }}>
+									<Alert severity={uploadStatus.type}>{uploadStatus.message}</Alert>
+								</Box>
+								</Fade>
+							)}
+			
+							<Box
+								sx={{
+								display: 'flex',
+								justifyContent: 'flex-end',
+								mt: 2,
+								}}
+							>
+								<Button
+									variant="outlined"
+									startIcon={<DownloadIcon />}
+									onClick={handleDownloadTemplate}
+									sx={{ mr: 'auto' }}
+								>
+									Download Template
+								</Button>
+								<Button
+								variant="contained"
+								onClick={importDataCivitasAkademika}
+								disabled={!uploadedFile || isUploading}
+								startIcon={isUploading && <CircularProgress size={20} />}
+								sx={{ minWidth: 100, ml: 1 }}
+								>
+								{isUploading ? 'Uploading...' : 'Submit'}
+								</Button>
+								<Button
+								variant="outlined"
+								onClick={handleCloseModalImportData}
+								sx={{ ml: 1 }}
+								disabled={isUploading}
+								>
+								Cancel
+								</Button>
+							</Box>
+							</Box>
+						</Box>
+						</Fade>
+					</Modal>
 				<Modal
 					open={openModal}
 					onClose={handleCloseModal}
@@ -429,13 +655,14 @@ function Dashboard() {
 							</Box>
 							<Box sx={{ pt: 2, display: 'flex', justifyContent: 'flex-end' }}>
 								<Button variant='contained' onClick={createPenggalanganDanaBeasiswa}>Submit</Button>
+								<Button variant='outlined' onClick={handleCloseModal} sx={{ ml: 1 }}>Cancel</Button>
 							</Box>
 						</Box>
 					</Box>
 				</Modal>
 				<Modal
 					open={openModalNonBeasiswa}
-					onClose={handleCloseModalGalangDana}
+					onClose={handleCloseModalNonBeasiswa}
 					aria-labelledby="modal-modal-title"
 					aria-describedby="modal-modal-description"
 				>
@@ -451,11 +678,11 @@ function Dashboard() {
 							<Box sx={{ pt: 1, display: 'flex', width: '100%' }}>
 								<Box>
 									<Typography>Nama</Typography>
-									<TextField size='small' variant='outlined' label='cth: Hasbi' sx={{width: '100%'}} onChange={(val) => {handleNamaPenanggungJawabChange(val.target.value)}}/>
+									<AutoComplete onChange={handleNamaPenanggungJawabChange} placeholder='cth: Hasbi' textFieldLabel='cth: Hasbi' tableName='civitas_akademika' columnName='nama' suggestionDisplayField='nama' suggestionValueField='nama' value={namaPenanggungJawab}/>
 								</Box>
 								<Box sx={{ ml: 2 }}>
 									<Typography>NIM/NIP</Typography>
-									<TextField size='small' variant='outlined' label='cth: 081424001' sx={{width: '100%'}} onChange={(val) => {handleNomorIndukPenanggungJawabChange(val.target.value)}}/>
+									<AutoComplete onChange={handleNomorIndukPenanggungJawabChange} placeholder='cth: 191524024' textFieldLabel='cth: 191524024' tableName='civitas_akademika' columnName='nomor_induk' suggestionDisplayField='nomor_induk' suggestionValueField='nomor_induk' value={nomorIndukPenanggungJawab}/>
 								</Box>
 								<Box sx={{ ml: 2 }}>
 									<Typography>No Telepon</Typography>
@@ -469,11 +696,11 @@ function Dashboard() {
 							<Box sx={{ display: 'flex', mt: 1 }}>
 								<Box>
 									<Typography>Nama</Typography>
-									<TextField size='small' variant='outlined' label='cth: John Doe' sx={{ width: '100%' }} onChange={(val) => {handleNamaPenerimaChange(val.target.value)}}/>
+									<AutoComplete onChange={handleNamaPenerimaChange} placeholder='cth: Hasbi' textFieldLabel='cth: Hasbi' tableName='civitas_akademika' columnName='nama' suggestionDisplayField='nama' suggestionValueField='nama' value={namaPenerima}/>
 								</Box>
 								<Box sx={{ml: 2}}>
 									<Typography>NIM/NIP</Typography>
-									<TextField size='small' variant='outlined' label='cth: 191524024' sx={{ width: '100%' }} onChange={(val) => {handleNomorIndukPenerimaChange(val.target.value)}}/>
+									<AutoComplete onChange={handleNomorIndukPenerimaChange} placeholder='cth: 231511000' textFieldLabel='cth: 231511000' tableName='civitas_akademika' columnName='nomor_induk' suggestionDisplayField='nomor_induk' suggestionValueField='nomor_induk' value={nomorIndukPenerima}/>	
 								</Box>
 								<Box sx={{ml: 2}}>
 									<Typography>No Telepon</Typography>
@@ -497,13 +724,14 @@ function Dashboard() {
 							</Box>
 							<Box sx={{ pt: 2, display: 'flex', justifyContent: 'flex-end' }}>
 								<Button variant='contained' onClick={handleOpenGalangDana}>Selanjutnya</Button>
+								<Button variant='outlined' onClick={handleCloseModalNonBeasiswa} sx={{ ml: 1 }}>Batal</Button>
 							</Box>
 						</Box>
 					</Box>
 				</Modal>
 				<Modal
 					open={openModalGalangDana}
-					onClose={handleCloseModal}
+					onClose={handleCloseModalGalangDana}
 					aria-labelledby="modal-modal-title"
 					aria-describedby="modal-modal-description"
 				>
@@ -548,10 +776,11 @@ function Dashboard() {
 									<TextField size='small' variant='outlined' label='cth: 5000000' sx={{ width: '100%' }} onChange={(val) => {handleKebutuhanDanaChange(val.target.value)}}/>
 								</Box>
 							</Box>
-						</Box>
-						<Box sx={{ display: 'flex', justifyContent: 'flex-end', pr: 2, pb: 2 }}>
-							<Button variant='contained' onClick={createPenggalanganDanaNonBeasiswa} sx={{ mr: 1 }}>Submit</Button>
-							<Button variant='outlined' onClick={handleOpenNonBeasiswa}>Sebelumnya</Button>
+							<Box sx={{ pt: 2, display: 'flex', justifyContent: 'flex-end' }}>
+								<Button variant='contained' onClick={createPenggalanganDanaNonBeasiswa}>Submit</Button>
+								<Button variant='outlined' onClick={handleOpenNonBeasiswa} sx={{ ml: 1 }}>Sebelumnya</Button>
+								<Button variant='outlined' onClick={handleCloseModalGalangDana} sx={{ ml: 1 }}>Batal</Button>
+							</Box>
 						</Box>
 					</Box>
 				</Modal>

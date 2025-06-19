@@ -1,296 +1,625 @@
-import { Typography, TextField, Container, Card, CardContent, Box, Button } from "@mui/material";
-import Autocomplete from "@mui/material/Autocomplete";
-import TimerOutlinedIcon from '@mui/icons-material/TimerOutlined';
-import Timeline from '@mui/lab/Timeline';
-import TimelineItem, { timelineItemClasses } from '@mui/lab/TimelineItem';
-import TimelineSeparator from '@mui/lab/TimelineSeparator';
-import TimelineConnector from '@mui/lab/TimelineConnector';
-import TimelineContent from '@mui/lab/TimelineContent';
-import TimelineDot from '@mui/lab/TimelineDot';
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
+import {
+  Typography,
+  TextField,
+  Container,
+  Card,
+  CardContent,
+  Box,
+  Button,
+  Stepper,
+  Step,
+  StepLabel,
+  StepConnector,
+  stepConnectorClasses,
+  Snackbar,
+  Alert,
+  CircularProgress,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
+} from "@mui/material";
+import { styled } from "@mui/system";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+const CustomStepIconRoot = styled("div")(({ theme, ownerState }) => ({
+  width: 32,
+  height: 32,
+  borderRadius: "50%",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  border: `2px solid ${ownerState.completed || ownerState.active
+      ? theme.palette.primary.main
+      : theme.palette.grey[400]
+    }`,
+  backgroundColor:
+    ownerState.completed || ownerState.active
+      ? theme.palette.primary.main
+      : theme.palette.common.white,
+  color:
+    ownerState.completed || ownerState.active
+      ? theme.palette.common.white
+      : theme.palette.text.secondary,
+  fontWeight: "bold",
+  fontSize: "16px",
+}));
 
+function CustomStepIcon(props) {
+  const { active, completed, icon } = props;
+  return (
+    <CustomStepIconRoot ownerState={{ completed, active }}>
+      {completed ? "✓" : icon}
+    </CustomStepIconRoot>
+  );
+}
+
+const CustomConnector = styled(StepConnector)(({ theme }) => ({
+  [`&.${stepConnectorClasses.alternativeLabel}`]: {
+    top: 16,
+  },
+  [`& .${stepConnectorClasses.line}`]: {
+    borderTopWidth: 3,
+    borderColor: theme.palette.grey[300],
+    transition: "border-color 0.3s ease",
+  },
+  [`&.${stepConnectorClasses.active} .${stepConnectorClasses.line}`]: {
+    borderColor: theme.palette.primary.main,
+  },
+  [`&.${stepConnectorClasses.completed} .${stepConnectorClasses.line}`]: {
+    borderColor: theme.palette.primary.main,
+  },
+}));
+
+const steps = ["Data Donatur", "Detail Donasi"];
 
 function FormulirDonasi() {
-	const { state } = useLocation()
-	console.log(state)
-	const [countTime, setCountTime] = useState('')
+  const { state } = useLocation();
+  const penggalanganDanaId = state?.id || null;
+  const judul = state?.judul || "Donasi";
 
-	// const countDownMinutes = () => {
-	// 	var now = new Date().getTime()
-	// 	var distance = countDownDate - now
+  const [step, setStep] = useState(0);
+  const [formData, setFormData] = useState({
+    namaDonatur: "",
+    noTelepon: "",
+    nominalDonasi: "",
+  });
+  const [errors, setErrors] = useState({});
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [snackbarSeverity, setSnackbarSeverity] = useState("success");
+  const [isLoading, setIsLoading] = useState(false);
+  const [paymentData, setPaymentData] = useState(null);
+  const [openConfirmBack, setOpenConfirmBack] = useState(false);
 
-	// 	var minutes = Math.floor((distance % (1000 * 60 * 60)) / 1000 * 60)
-	// 	return (
-	// 		{ minutes }
-	// 	)
-	// }
-	const [namaDonatur, setNamaDonatur] = useState('')
-	const [noTeleponDonatur, setNoTeleponDonatur] = useState('')
-	const [nominalDonasi, setNominalDonasi] = useState('')
-	const [nomorRekening, setNomorRekening] = useState('')
-	const [namaBank, setNamaBank] = useState('')
-	const [namaPemilikRekening, setNamaPemilikRekening] = useState('')
-	const [strukPembayaran, setStrukPembayaran] = useState('')
-	const [bankAdmin, setBankAdmin] = useState([])
-	const [pendingDonasi, setPendingDonasi] = useState([])
-	const [nomorReferensi, setNomorReferensi] = useState('')
+  const handleSubmit = () => {
+  // Tambahkan logika submit sesuai kebutuhan
+  console.log("Form disubmit!");
+  setSnackbarSeverity("success");
+  setSnackbarMessage("Data berhasil disubmit.");
+  setOpenSnackbar(true);
 
-	const [step, setStep] = useState(0);
+  // Kembali ke awal
+  setStep(0);
+};
 
-	const handleNamaDonaturChange = (val) => {
-		setNamaDonatur(val)
-	}
-	const handleNoTeleponDonaturChange = (val) => {
-		setNoTeleponDonatur(val)
-	}
-	const handleNominalDonasiChange = (val) => {
-		setNominalDonasi(val)
-	}
-	const handleNomorRekeningChange = (val) => {
-		setNomorRekening(val)
-	}
-	const handleNamaBankChange = (val) => {
-		setNamaBank(val)
-	}
-	const handleNamaPemilikRekeningChange = (val) => {
-		setNamaPemilikRekening(val)
-	}
-	const handleStrukPembayaranChange = (val) => {
-		setStrukPembayaran(val)
-	}
+  const MIN_DONASI = 10000;
+  const MAX_DONASI = 100000000;
+  const currentDate = new Date();
+  const deadline = new Date(currentDate);
+  deadline.setDate(currentDate.getDate() + 2);
+  const deadlineString = `${deadline.getDate()} ${deadline.toLocaleString(
+    "default",
+    { month: "long" }
+  )} ${deadline.getFullYear()} - ${deadline.toLocaleTimeString([], {
+    hour: "2-digit",
+    minute: "2-digit",
+  })}`;
 
-	const createDonasi = async () => {
-		await fetch('http://localhost:8000/v1/penggalangan/donasi/createDonasi',
-			{
-				mode: 'cors',
-				method: 'POST',
-				headers: {
-					Accept: 'application/json',
-					'Content-Type': 'application/json',
-					'Access-Control-Allow-Origin': '*',
-				},
-				body: JSON.stringify({
-					"id": state,
-					"nama": namaDonatur,
-					"nomor_telepon": noTeleponDonatur,
-					"nominal_donasi": nominalDonasi,
-					"nomor_rekening": nomorRekening,
-					"nama_pemilik_rekening": namaPemilikRekening,
-					"nama_bank": namaBank
-				}),
-			})
-			.then((response) => response.json())
-			.then((data) => {
-				console.log(data.data.donasi.nomor_referensi);
-				setNomorReferensi(data.data.donasi.nomor_referensi)
-			})
-			.catch((err) => {
-				console.log(err.message);
-			})
-		setStep(1)
-	}
+  useEffect(() => {
+    console.log('Received state:', { penggalanganDanaId, judul });
+  }, [penggalanganDanaId, judul]);   
+
+  useEffect(() => {
+    const script = document.createElement("script");
+    script.src = "https://app.sandbox.midtrans.com/snap/snap.js";
+    script.setAttribute(
+      "data-client-key",
+      process.env.REACT_APP_MIDTRANS_CLIENT_KEY ||
+      "SB-Mid-client-QHKjxlLz91qK4Cg6"
+    );
+    document.body.appendChild(script);
+    return () => {
+      document.body.removeChild(script);
+    };
+  }, []);
+
+  const resetForm = () => {
+    setStep(0);
+    setFormData({
+      namaDonatur: "",
+      noTelepon: "",
+      nominalDonasi: "",
+    });
+    setPaymentData(null);
+  };
+
+  const isStepFilled = () => {
+    if (step === 0) {
+      return (
+        formData.namaDonatur &&
+        formData.noTelepon &&
+        !errors.namaDonatur &&
+        !errors.noTelepon
+      );
+    } else if (step === 1) {
+      return formData.nominalDonasi && !errors.nominalDonasi;
+    }
+    return false;
+  };
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+
+    if (name === "namaDonatur") {
+      setErrors((prev) => ({
+        ...prev,
+        namaDonatur: value ? "" : "Nama donatur harus diisi",
+      }));
+    }
+    if (name === "noTelepon") {
+      if (!value) {
+        setErrors((prev) => ({ ...prev, noTelepon: "No telepon harus diisi" }));
+      } else if (!/^\d+$/.test(value)) {
+        setErrors((prev) => ({
+          ...prev,
+          noTelepon: "No telepon harus berupa angka",
+        }));
+      } else {
+        setErrors((prev) => ({ ...prev, noTelepon: "" }));
+      }
+    }
+    if (name === "nominalDonasi") {
+      if (!value) {
+        setErrors((prev) => ({
+          ...prev,
+          nominalDonasi: "Nominal donasi harus diisi",
+        }));
+      } else if (isNaN(value) || Number(value) < MIN_DONASI) {
+        setErrors((prev) => ({
+          ...prev,
+          nominalDonasi: `Minimal Rp${MIN_DONASI.toLocaleString()}`,
+        }));
+      } else if (Number(value) > MAX_DONASI) {
+        setErrors((prev) => ({
+          ...prev,
+          nominalDonasi: `Maksimal Rp${MAX_DONASI.toLocaleString()}`,
+        }));
+      } else {
+        setErrors((prev) => ({ ...prev, nominalDonasi: "" }));
+      }
+    }
+  };
+
+  const handleBackClick = () => {
+    if (isStepFilled()) {
+      setOpenConfirmBack(true);
+    } else {
+      setStep((prev) => prev - 1);
+    }
+  };
+
+  const confirmBack = (discardData = false) => {
+    setOpenConfirmBack(false);
+    if (discardData) {
+      if (step === 0) {
+        setFormData((prev) => ({
+          ...prev,
+          namaDonatur: "",
+          noTelepon: "",
+        }));
+      } else if (step === 1) {
+        setFormData((prev) => ({
+          ...prev,
+          nominalDonasi: "",
+        }));
+      }
+    }
+    setStep((prev) => prev - 1);
+  };
+
+  const handleNext = async () => {
+    let hasError = false;
+    const newErrors = {};
+
+    if (step === 0) {
+      // Validate penggalanganDanaId
+      if (!penggalanganDanaId) {
+        setSnackbarSeverity("error");
+        setSnackbarMessage("ID penggalangan dana tidak ditemukan.");
+        setOpenSnackbar(true);
+        setIsLoading(false);
+        return;
+      }
+
+      console.log('penggalangan_dana_id:', penggalanganDanaId);
+      console.log('judul:', judul);
 
 
-	useEffect(() => {
-		const getPendingDonasi = async () => {
-			await fetch('http://localhost:8000/v1/penggalangan/donasi/getPendingDonasi',
-				{
-					mode: 'cors',
-					method: 'POST',
-					headers: {
-						Accept: 'application/json',
-						'Content-Type': 'application/json',
-						'Access-Control-Allow-Origin': '*',
-					},
-					body: JSON.stringify({
-						nomor_referensi: nomorReferensi
-					})
-				})
-				.then((response) => response.json())
-				.then((data) => {
-					console.log(data.data)
-					let arrayData = []
-					arrayData.push(data.data)
-					setPendingDonasi(arrayData)
-				})
-		}
-		if (step === 1) {
-			getPendingDonasi()
-		}
-	}, [step])
+      if (!formData.namaDonatur) {
+        newErrors.namaDonatur = "Nama donatur harus diisi";
+        hasError = true;
+      }
+      if (!formData.noTelepon) {
+        newErrors.noTelepon = "No telepon harus diisi";
+        hasError = true;
+      } else if (!/^\d+$/.test(formData.noTelepon)) {
+        newErrors.noTelepon = "No telepon harus berupa angka";
+        hasError = true;
+      }
+    }
 
-	const uploadStrukPembayaran = async () => {
-		await fetch('http://localhost:8000/v1/penggalangan/donasi/uploadStrukPembayaran',
-			{
-				mode: 'cors',
-				method: 'POST',
-				headers: {
-					Accept: 'application/json',
-					'Content-Type': 'application/json',
-					'Access-Control-Allow-Origin': '*',
-				},
-				body: JSON.stringify({
-					"nomor_referensi": nomorReferensi,
-					"struk_pembayaran": strukPembayaran
-				})
-			})
-			.then((response) => response.json())
-			.then((data) => {
-				console.log(data.data);
+    if (step === 1) {
+      const nominal = Number(formData.nominalDonasi);
+      if (!formData.nominalDonasi) {
+        newErrors.nominalDonasi = "Nominal donasi harus diisi";
+        hasError = true;
+      } else if (
+        isNaN(nominal) ||
+        nominal < MIN_DONASI ||
+        nominal > MAX_DONASI
+      ) {
+        newErrors.nominalDonasi = `Donasi antara Rp${MIN_DONASI.toLocaleString()} - Rp${MAX_DONASI.toLocaleString()}`;
+        hasError = true;
+      }
+    }
 
-			})
-	}
-	const renderDataPribadiSection = () => {
-		return (
-			<Box sx={{ width: '70%', display: 'flex', justifyContent: 'space-between' }}>
-				<Box sx={{ width: '35%', display: 'flex', justifyContent: 'space-between' }}>
-					<Timeline
-						sx={{
-							[`& .${timelineItemClasses.root}:before`]: {
-								flex: 0,
-							},
-						}}
-					>
-						<TimelineItem>
-							<TimelineSeparator>
-								<TimelineDot color="error" variant="outlined" />
-								<TimelineConnector />
-							</TimelineSeparator>
-							<TimelineContent sx={{ width: 'max-content' }}><Typography variant='h3' sx={{ fontWeight: 'bold' }}>Donasi</Typography></TimelineContent>
-						</TimelineItem>
-						<TimelineItem>
-							<TimelineSeparator>
-								<TimelineDot />
-								<TimelineConnector />
-							</TimelineSeparator>
-							<TimelineContent variant='h4' sx={{ width: 'max-content', fontWeight: '0' }}>Data Pribadi</TimelineContent>
-						</TimelineItem>
-						<TimelineItem>
-							<TimelineSeparator>
-								<TimelineDot />
-							</TimelineSeparator>
-							<TimelineContent variant='body1'>Upload Resi Transaksi</TimelineContent>
-						</TimelineItem>
-					</Timeline>
-				</Box>
-				<Box sx={{ display: 'flex', justifyContent: 'center' }}>
-					<Card sx={{ width: 400, my: 3 }}>
-						<CardContent sx={{ display: "flex", flexDirection: 'column' }}>
-							<Typography variant='body1'>Nama Donatur</Typography>
-							<TextField variant="outlined" size="small" label='cth: John Doe' onChange={(val) => { handleNamaDonaturChange(val.target.value) }} />
-							<Typography variant="body1" sx={{ mt: 2 }}>Nomor Telepon Donatur</Typography>
-							<TextField variant="outlined" size="small" label='cth: 082121445524' onChange={(val) => { handleNoTeleponDonaturChange(val.target.value) }} />
-							<Typography variant="body1" sx={{ mt: 2 }}>Nominal Donasi</Typography>
-							<TextField variant="outlined" size="small" label='cth: 50000 (Rp)' onChange={(val) => handleNominalDonasiChange(val.target.value)} />
-							<Typography variant="body1" sx={{ mt: 2 }}>Nama Bank</Typography>
-							<TextField variant="outlined" size="small" label='cth: Mandiri' onChange={(val) => handleNamaBankChange(val.target.value)} />
-							<Typography variant="body1" sx={{ mt: 2 }}>Nomor Rekening</Typography>
-							<TextField variant="outlined" size="small" label='cth: 1300046121001' onChange={(val) => handleNomorRekeningChange(val.target.value)} />
-							<Typography variant="body1" sx={{ mt: 2 }}>Nama Pemilik Rekening</Typography>
-							<TextField variant="outlined" size="small" label='cth: HASBI' onChange={(val) => handleNamaPemilikRekeningChange(val.target.value)} />
+    setErrors(newErrors);
 
-							<Button size="medium" variant="contained" color="success" onClick={createDonasi} sx={{ mt: 4, textTransform: 'capitalize' }}>Lanjut Pembayaran</Button>
-						</CardContent>
-					</Card>
-				</Box>
-			</Box>
-		)
-	}
+    if (!hasError && step === 1) {
+      try {
+        setIsLoading(true);
+        const response = await fetch(
+          "http://localhost:8000/v1/penggalangan/donasi/createDonasi",
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              id: penggalanganDanaId,
+              nama: formData.namaDonatur,
+              nomor_telepon: formData.noTelepon,
+              nominal_donasi: Number(formData.nominalDonasi),
+            }),
+          }
+        );
 
-	const renderPersyaratanSection = () => {
-		return (
-			<Box sx={{ width: '70%', display: 'flex', justifyContent: 'space-between' }}>
-				<Box sx={{ width: '35%', display: 'flex', justifyContent: 'space-between' }}>
-					<Timeline
-						sx={{
-							[`& .${timelineItemClasses.root}:before`]: {
-								flex: 0,
-							},
-						}}
-					>
-						<TimelineItem>
-							<TimelineSeparator>
-								<TimelineDot color="error" variant="outlined" />
-								<TimelineConnector />
-							</TimelineSeparator>
-							<TimelineContent sx={{ width: 'max-content' }}><Typography variant='h3' sx={{ fontWeight: 'bold' }}>Donasi</Typography></TimelineContent>
-						</TimelineItem>
-						<TimelineItem>
-							<TimelineSeparator>
-								<TimelineDot color="success" />
-								<TimelineConnector />
-							</TimelineSeparator>
-							<TimelineContent variant='body1' sx={{ width: 'max-content', fontWeight: '0' }}>Data Pribadi</TimelineContent>
-						</TimelineItem>
-						<TimelineItem>
-							<TimelineSeparator>
-								<TimelineDot />
-							</TimelineSeparator>
-							<TimelineContent variant='h4'>Upload Resi Transaksi</TimelineContent>
-						</TimelineItem>
-					</Timeline>
-				</Box>
-				<Box sx={{ display: 'flex', justifyContent: 'center' }}>
-					<Card sx={{ width: 400, my: 3 }}>
-						<CardContent sx={{ display: "flex", flexDirection: 'column' }}>
-							{
-								pendingDonasi
-									.map((info, index) => (
-										<Box sx={{ display: 'flex', flexDirection: 'column', backgroundColor: '#F2F2F2', p: 1, borderRadius: '8px' }}>
-											<div>
-												<Typography variant="body2" color={'grey'}>Batas waktu pembayaran</Typography>
-												<Typography variant="body1" fontWeight={'bold'}>{info.waktu_berakhir}</Typography>
-											</div>
-											<div style={{ display: "flex", justifyContent: 'space-between', marginTop: '16px' }}>
-												<div style={{ display: 'flex', alignItems: 'center' }}>
-													<Typography variant='body2' sx={{}}>Status :</Typography>
-													<Box border={1} borderRadius={8} borderColor={'red'} px={1} sx={{ ml: 1 }}>
-														<Typography variant='caption' sx={{ color: 'red' }}>Pending</Typography>
-													</Box>
-												</div>
-												<div style={{ display: "flex", alignItems: 'center' }}>
-													<TimerOutlinedIcon fontSize="small" />
-													<Typography variant="body2" sx={{ ml: 0.5 }}>{ }</Typography>
-												</div>
-											</div>
-										</Box>
-									))
-							}
-							<Typography sx={{ mt: 2 }}>Nomor Rekening Tujuan</Typography>
-							{
-								pendingDonasi
-									.map((info, index) => (
-										<Box sx={{ borderRadius: '8px', backgroundColor: '#F2F2F2', p: 1 }}>
-											<Typography variant="body2" >{info.rekening_bank.nama_bank}</Typography>
-											<Typography>{info.rekening_bank.nomor_rekening}</Typography>
-											<Typography>{info.rekening_bank.nama_pemilik_rekening}</Typography>
-										</Box>
-									))
-							}
+        const data = await response.json();
 
-							<Typography sx={{ mt: 2 }}>Jumlah Donasi</Typography>
-							<Box sx={{ borderRadius: '8px', backgroundColor: '#F2F2F2', p: 1 }}>
-								<Typography variant="body1" fontWeight={'bold'} >{nominalDonasi}</Typography>
-							</Box>
-							<Typography variant="caption" sx={{ color: '#D80000' }}>*Lakukan pembayaran sesuai jumlah donasi</Typography>
-							<Typography sx={{ mt: 2 }}>Bukti Transaksi</Typography>
-							<TextField type="file" onChange={(val) => handleStrukPembayaranChange(val.target.value)}></TextField>
-							<Button size="medium" variant="outlined" onClick={() => setStep(0)} color="success" sx={{ mt: 4, textTransform: 'capitalize' }}>Kembali</Button>
-							<Button size="medium" variant="contained" color="success" sx={{ mt: 1, textTransform: 'capitalize' }} onClick={uploadStrukPembayaran}>Submit</Button>
-							<Typography variant="body2" sx={{ mt: 1 }}></Typography>
-						</CardContent>
-					</Card>
-				</Box>
-			</Box>
-		)
-	}
-	return (
-		<Container sx={{ display: 'flex' }}>
-			{
-				step === 0 ? renderDataPribadiSection() : renderPersyaratanSection()
-			}
-		</Container>
-	)
+        if (data.response_code !== 201) {
+          throw new Error(
+            data.response_message || "Terjadi kesalahan saat memproses donasi"
+          );
+        }
+
+        setPaymentData({
+          orderId: data.data.donasi?.nomor_referensi,
+          redirectUrl: data.data.redirect_url,
+          token: data.data.midtrans_token,
+          status: data.data.donasi?.payment_status,
+        });
+
+        setIsLoading(false);
+
+        if (data.data.midtrans_token && window.snap) {
+          console.log(
+            "Initiating Snap payment with token:",
+            data.data.midtrans_token
+          );
+          window.snap.pay(data.data.midtrans_token, {
+            onSuccess: (result) => {
+              console.log("onSuccess triggered:", result);
+              setPaymentData((prev) => ({ ...prev, status: 1 }));
+              setSnackbarSeverity("success");
+              setSnackbarMessage(
+                "Pembayaran berhasil! Terima kasih atas donasi Anda."
+              );
+              setOpenSnackbar(true);
+              resetForm();
+            },
+            onPending: (result) => {
+              console.log("onPending triggered:", result);
+              setPaymentData((prev) => ({ ...prev, status: 0 }));
+              setSnackbarSeverity("info");
+              setSnackbarMessage(
+                "Pembayaran masih diproses, silakan cek kembali nanti."
+              );
+              setOpenSnackbar(true);
+              resetForm();
+            },
+            onError: (result) => {
+              console.log("onError triggered:", result);
+              setSnackbarSeverity("error");
+              setSnackbarMessage("Terjadi kesalahan saat pembayaran.");
+              setOpenSnackbar(true);
+            },
+            onClose: () => {
+              console.log("onClose triggered");
+              setSnackbarSeverity("info");
+              setSnackbarMessage(
+                "Anda menutup halaman pembayaran. Silakan coba lagi."
+              );
+              setOpenSnackbar(true);
+            },
+          });
+        } else {
+          console.error("Snap.js failed to load or token missing");
+          setSnackbarSeverity("error");
+          setSnackbarMessage("Gagal memuat Snap.js. Silakan coba lagi.");
+          setOpenSnackbar(true);
+        }
+      } catch (error) {
+        console.error("Fetch error:", error);
+        setIsLoading(false);
+        setSnackbarSeverity("error");
+        setSnackbarMessage(error.message || "Terjadi kesalahan pada server");
+        setOpenSnackbar(true);
+      }
+    } else if (!hasError) {
+      setStep((prev) => prev + 1);
+    }
+  };
+
+  const renderDataDonaturSection = () => (
+    <Card
+      sx={{
+        width: "100%",
+        boxShadow: "none",
+        border: "1px solid #e0e0e0",
+        my: 3,
+      }}
+    >
+      <CardContent>
+        <Typography
+          variant="h3"
+          gutterBottom
+          sx={{ fontWeight: "bold", color: "grey.800", mb: 3 }}
+        >
+          Data Donatur
+        </Typography>
+        <TextField
+          label="Nama Donatur"
+          name="namaDonatur"
+          value={formData.namaDonatur}
+          onChange={handleChange}
+          fullWidth
+          error={!!errors.namaDonatur}
+          helperText={errors.namaDonatur}
+          sx={{ mb: 2 }}
+        />
+        <TextField
+          label="No Telepon"
+          name="noTelepon"
+          value={formData.noTelepon}
+          onChange={handleChange}
+          fullWidth
+          error={!!errors.noTelepon}
+          helperText={errors.noTelepon}
+          sx={{ mb: 2 }}
+        />
+        <Button
+          variant="contained"
+          fullWidth
+          sx={{ mt: 2 }}
+          onClick={handleNext}
+        >
+          Selanjutnya
+        </Button>
+      </CardContent>
+    </Card>
+  );
+
+  const renderDetailDonasiSection = () => (
+    <Card
+      sx={{
+        width: "100%",
+        boxShadow: "none",
+        border: "1px solid #e0e0e0",
+        my: 3,
+      }}
+    >
+      <CardContent>
+        <Typography
+          variant="h4"
+          gutterBottom
+          sx={{ fontWeight: "bold", color: "grey.800", mb: 3 }}
+        >
+          Detail Donasi
+        </Typography>
+        <Box sx={{ "& > *": { mb: 1 } }}>
+          <Typography variant="body2">
+            <strong>Donatur:</strong> {formData.namaDonatur}
+          </Typography>
+          <Typography variant="body2">
+            <strong>Nomor Telepon:</strong> {formData.noTelepon}
+          </Typography>
+        </Box>
+        <TextField
+          label="Nominal Donasi"
+          name="nominalDonasi"
+          value={formData.nominalDonasi}
+          onChange={handleChange}
+          fullWidth
+          error={!!errors.nominalDonasi}
+          helperText={errors.nominalDonasi}
+          sx={{ mb: 2, mt: 4 }}
+          InputProps={{
+            startAdornment: <Typography sx={{ mr: 1 }}>Rp</Typography>,
+          }}
+        />
+        <Button
+          variant="contained"
+          fullWidth
+          onClick={handleNext}
+          disabled={isLoading}
+          sx={{ mt: 2 }}
+        >
+          {isLoading ? (
+            <CircularProgress size={24} color="inherit" />
+          ) : (
+            "Lanjut Pembayaran"
+          )}
+        </Button>
+        <Button
+          startIcon={<ArrowBackIcon />}
+          onClick={handleBackClick}
+          sx={{ mt: 2 }}
+        >
+          Kembali
+        </Button>
+      </CardContent>
+    </Card>
+  );
+
+  return (
+    <Box sx={{ width: "100%", backgroundColor: "#fff", pt: 3 }}>
+      <Box sx={{ width: "100%", maxWidth: "md", mx: "auto", px: 2 }}>
+        <Box textAlign="center" sx={{ mb: 3 }}>
+          <Typography
+            variant="h5"
+            sx={{
+              color: "primary.main",
+              fontWeight: "bold",
+              fontSize: "24px",
+            }}
+          >
+            Pembayaran Donasi - {judul || "Penggalangan Dana"}
+          </Typography>
+        </Box>
+
+        <Stepper
+          activeStep={step}
+          alternativeLabel
+          connector={<CustomConnector />}
+          sx={{ mb: 4 }}
+        >
+          {steps.map((label, index) => (
+            <Step key={index}>
+              <StepLabel StepIconComponent={CustomStepIcon}>
+                <Typography
+                  sx={{
+                    color: step === index ? "primary.main" : "primary.main",
+                    fontWeight: step === index ? "bold" : "normal",
+                    fontSize: 15,
+                  }}
+                >
+                  {label}
+                </Typography>
+              </StepLabel>
+            </Step>
+          ))}
+        </Stepper>
+      </Box>
+
+      <Container maxWidth="sm">
+        {step === 0 && renderDataDonaturSection()}
+        {step === 1 && renderDetailDonasiSection()}
+
+        <Box display="flex" justifyContent="space-between" mt={3}>
+          {step > 0 && (
+            <Button onClick={() => setStep(step - 1)} variant="outlined">
+              Kembali
+            </Button>
+          )}
+          {step < steps.length - 1 ? (
+            <Button onClick={() => setStep(step + 1)} variant="contained">
+              Lanjut
+            </Button>
+          ) : (
+            <Button onClick={handleSubmit} variant="contained" color="primary">
+              Selesai
+            </Button>
+          )}
+        </Box>
+
+        <Snackbar
+          open={openSnackbar}
+          autoHideDuration={3000}
+          onClose={() => setOpenSnackbar(false)}
+        >
+          <Alert
+            severity={snackbarSeverity}
+            onClose={() => setOpenSnackbar(false)}
+          >
+            {snackbarMessage}
+          </Alert>
+        </Snackbar>
+
+        <Dialog
+          open={openConfirmBack}
+          onClose={() => setOpenConfirmBack(false)}
+        >
+          <DialogTitle>Konfirmasi</DialogTitle>
+          <DialogContent>
+            <DialogContentText>
+              {step === 0
+                ? "Data nama dan telepon yang telah diisi akan dihapus. Yakin ingin kembali?"
+                : "Data nominal yang telah diisi akan dihapus. Yakin ingin kembali?"}
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setOpenConfirmBack(false)}>Batal</Button>
+            <Button onClick={() => confirmBack(true)} color="error">
+              Hapus Data & Kembali
+            </Button>
+            <Button onClick={() => confirmBack(false)} color="primary">
+              Simpan Data & Kembali
+            </Button>
+          </DialogActions>
+        </Dialog>
+        {step === 0 && renderDataDonaturSection()}
+        {step === 1 && renderDetailDonasiSection()}
+
+        <Snackbar
+          open={openSnackbar}
+          autoHideDuration={3000}
+          onClose={() => setOpenSnackbar(false)}
+        >
+          <Alert
+            severity={snackbarSeverity}
+            onClose={() => setOpenSnackbar(false)}
+          >
+            {snackbarMessage}
+          </Alert>
+        </Snackbar>
+
+        <Dialog
+          open={openConfirmBack}
+          onClose={() => setOpenConfirmBack(false)}
+        >
+          <DialogTitle>Konfirmasi</DialogTitle>
+          <DialogContent>
+            <DialogContentText>
+              {step === 0
+                ? "Data nama dan telepon yang telah diisi akan dihapus. Yakin ingin kembali?"
+                : "Data nominal yang telah diisi akan dihapus. Yakin ingin kembali?"}
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setOpenConfirmBack(false)}>Batal</Button>
+            <Button onClick={() => confirmBack(true)} color="error">
+              Hapus Data & Kembali
+            </Button>
+            <Button onClick={() => confirmBack(false)} color="primary">
+              Simpan Data & Kembali
+            </Button>
+          </DialogActions>
+        </Dialog>
+      </Container>
+    </Box>
+  );
 }
-export default FormulirDonasi
+
+export default FormulirDonasi;
