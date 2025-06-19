@@ -24,7 +24,7 @@ import {
 } from "@mui/material";
 import { styled } from "@mui/system";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-const CustomStepIconRoot = styled("div")(({ theme, ownerState })=> ({
+const CustomStepIconRoot = styled("div")(({ theme, ownerState }) => ({
   width: 32,
   height: 32,
   borderRadius: "50%",
