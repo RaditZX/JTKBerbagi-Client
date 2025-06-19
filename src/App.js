@@ -2,6 +2,7 @@ import React from "react";
 import "./App.css";
 import { Routes, Route } from "react-router-dom";
 // import { ThemeProvider } from '@emotion/react';
+
 import Dashboard from "./views_adm/DashboardAdmin";
 import CalonPenerimaBeasiswa from "./views_adm/CalonPenerimaBeasiswa";
 import CalonPenerimaNonBeasiswa from "./views_adm/CalonPenerimaNonBeasiswa";
@@ -15,7 +16,9 @@ import PenerimaBeasiswa from "./views_adm/PenerimaBeasiswa";
 import PenerimaNonBeasiswa from "./views_adm/PenerimaNonBeasiswa";
 import Layout from "./components/layout";
 import RekapitulasiDana from "./views_user/RekapitulasiDana";
-import FinishRedirect from './components/form/FinishRedirect';
+import DetailPenggalanganDanaBerlangsung from "./views_adm/DetailPenggalanganDanaBerlangsung";
+import FinishRedirect from "./components/form/FinishRedirect";
+
 import LayoutUser from "./components/layout_user";
 import LaporanRekapitulasiDonasi from "./views_adm/DaftarDonasi";
 import FormulirDonasi from "./components/form/FormDonasi";
@@ -34,11 +37,15 @@ function App() {
     user.name = localStorage.getItem("username");
     user.role = localStorage.getItem("role");
   }
+
   return (
     <React.Fragment>
       <Routes>
+        {/* Admin login and registration */}
         <Route path="/login" element={<Login />} />
         <Route path="/registration" element={<FormulirPendaftaranAkun />} />
+
+        {/* Admin layout - Penanggung Jawab JTK Berbagi */}
         <Route
           path="/"
           element={
@@ -59,7 +66,7 @@ function App() {
             element={<CalonPenerimaNonBeasiswa />}
           />
           <Route
-            path="/rekapitulasi-dana/"
+            path="/rekapitulasi-dana"
             element={<LaporanRekapitulasiBeasiswa />}
           />
           <Route
@@ -74,7 +81,13 @@ function App() {
             path="/rekapitulasi-donasi"
             element={<LaporanRekapitulasiDonasi />}
           />
+          <Route
+            path="/detail-bantuan-dana"
+            element={<DetailPenggalanganDanaBerlangsung />}
+          />
         </Route>
+
+        {/* Admin layout - Pihak Jurusan */}
         <Route
           path="/"
           element={
@@ -97,6 +110,7 @@ function App() {
           />
         </Route>
 
+        {/* User login & layout */}
         <Route path="/login-user" element={<LoginUser />} />
         <Route path="/" element={<LayoutUser />}>
           <Route path="/beranda" element={<Beranda />} />
@@ -118,4 +132,5 @@ function App() {
     </React.Fragment>
   );
 }
+
 export default App;

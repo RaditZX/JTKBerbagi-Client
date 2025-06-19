@@ -1,4 +1,5 @@
 import { Card, Typography } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 import GroupIcon from "@mui/icons-material/Group";
 import AutorenewIcon from "@mui/icons-material/Autorenew"
 import FactCheckIcon from '@mui/icons-material/FactCheck';
@@ -6,6 +7,14 @@ import PostAddIcon from '@mui/icons-material/PostAdd';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 
 function InfoCard({ title, value, description, index }) {
+	const navigate = useNavigate(); // ⬅️ Tambah ini
+
+	const handleViewMoreClick = () => {
+		if (title === "Penggalangan Dana Berlangsung") {
+			navigate('/detail-bantuan-dana'); // ⬅️ arahkan ke route detail
+		}
+	};
+
 	const getItemIcon = () => {
 		let icon;
 		switch (index) {
@@ -34,7 +43,9 @@ function InfoCard({ title, value, description, index }) {
 						<Typography sx={{ fontSize: '14px' }}>{description}</Typography>
 					</div>
 				</div>
-				<div style={{ color: 'grey', padding: '16px 16px 16px 24px', boxShadow: '0px 0px 4px 0px rgba(0, 0, 0, 0.25) inset', display: 'flex', justifyContent: 'space-between' }}>
+				<div 
+				onClick={handleViewMoreClick}
+				style={{ color: 'grey', padding: '16px 16px 16px 24px', boxShadow: '0px 0px 4px 0px rgba(0, 0, 0, 0.25) inset', display: 'flex', justifyContent: 'space-between' }}>
 					<Typography sx={{ fontSize: '14px' }}>View more</Typography>
 					<KeyboardArrowRightIcon />
 				</div>
