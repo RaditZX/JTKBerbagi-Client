@@ -143,11 +143,11 @@ function EvaluasiPenyaluranBeasiswaPage() {
   };
 
   const headers = [
-    { title: 'NIM', id: 'nim' },
+    { title: 'NIM', id: 'mahasiswa_id' },
     { title: 'Nama', id: 'nama' },
     { title: 'Alasan', id: 'alasan' },
-    { title: 'File', id: 'file_url' },
-    { title: 'Status', id: 'status' },
+    { title: 'File', id: 'dokumen_evaluasi' },
+    { title: 'Status', id: 'status_penyaluran' },
     { title: 'Tanggal Pengajuan', id: 'created_at' },
   ];
 
@@ -158,9 +158,9 @@ function EvaluasiPenyaluranBeasiswaPage() {
         <Typography variant='h4' sx={{ ml: 1 }}>Evaluasi Penyaluran Beasiswa</Typography>
       </Box>
       <Box sx={{ mt: 2 }}>
-        <Button variant="contained" onClick={handleOpenModal} sx={{ mb: 2 }}>
+        {/* <Button variant="contained" onClick={handleOpenModal} sx={{ mb: 2 }}>
           Tambah Evaluasi
-        </Button>
+        </Button> */}
         <TableContainer component={Paper}>
           <Table sx={{ minWidth: 700 }} aria-label="customized table">
             <TableHead>
