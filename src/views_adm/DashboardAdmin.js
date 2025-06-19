@@ -16,7 +16,7 @@ import { useLocation, Link } from 'react-router-dom';
 import { useDropzone } from 'react-dropzone';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import CancelIcon from '@mui/icons-material/Cancel';
-import DownloadIcon from '@mui/icons-material/Download';
+import DownloadIcon from '@mui/icons-material/Download'
 
 function Dashboard() {
 	const styleBox = {
@@ -35,173 +35,32 @@ function Dashboard() {
 	const [uploadStatus, setUploadStatus] = React.useState(null);
 
 	const [deskripsi, setDeskripsi] = React.useState('');
-	const [jumlahPenerimaBantuan, setJumlahPenerimaBantuan] = React.useState('');
-	const [jumlahDonasi, setJumlahDonasi] = React.useState('');
+	const [jumlahPenerimaBantuan, setJumlahPenerimaBantuan] = React.useState('')
+	const [jumlahDonasi, setJumlahDonasi] = React.useState('')
 	const [openModal, setOpenModal] = React.useState(false);
 	const [openModalImportData, setOpenModalImportData] = React.useState(false);
 	const [openModalNonBeasiswa, setOpenModalNonBeasiswa] = React.useState(false);
 	const [openModalGalangDana, setOpenModalGalangDana] = React.useState(false);
 	const [anchorEl, setAnchorEl] = React.useState(null);
-	const [jumlahPengajuan, setJumlahPengajuan] = React.useState('');
-	const [jumlahDana, setJumlahDana] = React.useState('');
-	const [namaPenanggungJawab, setNamaPenanggungJawab] = React.useState('');
-	const [nomorIndukPenanggungJawab, setNomorIndukPenanggungJawab] = React.useState('');
-	const [nomorTeleponPenanggungJawab, setNomorTeleponPenanggungJawab] = React.useState('');
-	const [nomorRekening, setNomorRekening] = React.useState('');
-	const [namaPemilikRekening, setNamaPemilikRekening] = React.useState('');
-	const [namaBank, setNamaBank] = React.useState('');
-	const [judul, setJudul] = React.useState('');
-	const [waktuBerakhir, setWaktuBerakhir] = React.useState('');
-	const [kebutuhanDana, setKebutuhanDana] = React.useState('');
-	const [namaPenerima, setNamaPenerima] = React.useState('');
-	const [nomorIndukPenerima, setNomorIndukPenerima] = React.useState('');
-	const [nomorTeleponPenerima, setNomorTeleponPenerima] = React.useState('');
-	const [kategori, setKategori] = React.useState('');
-	const [judulGalangDana, setJudulGalangDana] = React.useState('');
+	const [jumlahPengajuan, setJumlahPengajuan] = React.useState('')
+	const [jumlahDana, setJumlahDana] = React.useState('')
+	const [namaPenanggungJawab, setNamaPenanggungJawab] = React.useState([]);
+	const [nomorIndukPenanggungJawab, setNomorIndukPenanggungJawab] = React.useState([]);
+	const [nomorTeleponPenanggungJawab, setNomorTeleponPenanggungJawab] = React.useState([]);
+	const [nomorRekening, setNomorRekening] = React.useState([]);
+	const [namaPemilikRekening, setNamaPemilikRekening] = React.useState([]);
+	const [namaBank, setNamaBank] = React.useState([]);
+	const [judul, setJudul] = React.useState([]);
+	const [waktuBerakhir, setWaktuBerakhir] = React.useState([]);
+	const [kebutuhanDana, setKebutuhanDana] = React.useState([]);
+	const [namaPenerima, setNamaPenerima] = React.useState([]);
+	const [nomorIndukPenerima, setNomorIndukPenerima] = React.useState([]);
+	const [nomorTeleponPenerima, setNomorTeleponPenerima] = React.useState([]);
+	const [kategori, setKategori] = React.useState([]);
+	const [judulGalangDana, setJudulGalangDana] = React.useState([]);
 	const [targetDana, setTargetDana] = React.useState('');
 	const [targetPenerima, setTargetPenerima] = React.useState('');
 	const [jenis, setJenis] = React.useState('NonBeasiswa');
-	
-	const [errors, setErrors] = React.useState({});
-
-	const validateField = (name, value) => {
-		switch (name) {
-			case 'judulGalangDana':
-				if (!value.trim()) return 'Judul galang dana wajib diisi';
-				if (value.length < 5) return 'Judul minimal 5 karakter';
-				if (value.length > 100) return 'Judul maksimal 100 karakter';
-				return '';
-			case 'deskripsi':
-				if (!value.trim()) return 'Deskripsi wajib diisi';
-				if (value.length < 10) return 'Deskripsi minimal 10 karakter';
-				if (value.length > 1000) return 'Deskripsi maksimal 1000 karakter';
-				return '';
-			case 'targetDana':
-				if (!value) return 'Target dana wajib diisi';
-				if (isNaN(value) || Number(value) <= 0) return 'Target dana harus berupa angka positif';
-				if (Number(value) < 100000) return 'Target dana minimal Rp 100.000';
-				return '';
-			case 'targetPenerima':
-				if (!value) return 'Target penerima wajib diisi';
-				if (isNaN(value) || Number(value) <= 0) return 'Target penerima harus berupa angka positif';
-				return '';
-			case 'namaPenanggungJawab':
-				if (!value.trim()) return 'Nama penanggung jawab wajib diisi';
-				if (!/^[a-zA-Z\s]+$/.test(value)) return 'Nama hanya boleh berisi huruf dan spasi';
-				if (value.length < 2) return 'Nama minimal 2 karakter';
-				return '';
-			case 'nomorIndukPenanggungJawab':
-				if (!value.trim()) return 'NIM/NIP wajib diisi';
-				if (!/^\d{9,}$/.test(value)) return 'NIM/NIP harus berupa angka minimal 9 digit';
-				return '';
-			case 'nomorTeleponPenanggungJawab':
-				if (!value.trim()) return 'Nomor telepon wajib diisi';
-				if (!/^08\d{8,13}$/.test(value)) return 'Nomor telepon harus diawali 08 dan 10-14 digit';
-				return '';
-			case 'namaPenerima':
-				if (!value.trim()) return 'Nama penerima wajib diisi';
-				if (!/^[a-zA-Z\s]+$/.test(value)) return 'Nama hanya boleh berisi huruf dan spasi';
-				if (value.length < 2) return 'Nama minimal 2 karakter';
-				return '';
-			case 'nomorIndukPenerima':
-				if (!value.trim()) return 'NIM/NIP penerima wajib diisi';
-				if (!/^\d{9,}$/.test(value)) return 'NIM/NIP harus berupa angka minimal 9 digit';
-				return '';
-			case 'nomorTeleponPenerima':
-				if (!value.trim()) return 'Nomor telepon penerima wajib diisi';
-				if (!/^08\d{8,13}$/.test(value)) return 'Nomor telepon harus diawali 08 dan 10-14 digit';
-				return '';
-			case 'namaPemilikRekening':
-				if (!value.trim()) return 'Nama pemilik rekening wajib diisi';
-				if (!/^[a-zA-Z\s]+$/.test(value)) return 'Nama hanya boleh berisi huruf dan spasi';
-				if (value.length < 2) return 'Nama minimal 2 karakter';
-				return '';
-			case 'namaBank':
-				if (!value.trim()) return 'Nama bank wajib diisi';
-				if (!/^[a-zA-Z\s]+$/.test(value)) return 'Nama bank hanya boleh berisi huruf dan spasi';
-				return '';
-			case 'nomorRekening':
-				if (!value.trim()) return 'Nomor rekening wajib diisi';
-				if (!/^\d{10,16}$/.test(value)) return 'Nomor rekening harus 10-16 digit angka';
-				return '';
-			case 'kategori':
-				if (!value) return 'Kategori wajib dipilih';
-				return '';
-			case 'waktuBerakhir':
-				if (!value) return 'Tanggal berakhir wajib diisi';
-				const selectedDate = new Date(value);
-				const today = new Date();
-				if (selectedDate < today) return 'Tanggal berakhir harus di masa depan';
-				return '';
-			case 'kebutuhanDana':
-				if (!value) return 'Nominal dana wajib diisi';
-				if (isNaN(value) || Number(value) <= 0) return 'Nominal dana harus berupa angka positif';
-				if (Number(value) < 100000) return 'Nominal dana minimal Rp 100.000';
-				return '';
-			default:
-				return '';
-		}
-	};
-
-	const handleInputChange = (name, value) => {
-		const error = validateField(name, value);
-		setErrors(prev => ({ ...prev, [name]: error }));
-
-		switch (name) {
-			case 'judulGalangDana': setJudulGalangDana(value); break;
-			case 'deskripsi': setDeskripsi(value); break;
-			case 'targetDana': setTargetDana(value); break;
-			case 'targetPenerima': setTargetPenerima(value); break;
-			case 'namaPenanggungJawab': setNamaPenanggungJawab(value); break;
-			case 'nomorIndukPenanggungJawab': setNomorIndukPenanggungJawab(value); break;
-			case 'nomorTeleponPenanggungJawab': setNomorTeleponPenanggungJawab(value); break;
-			case 'namaPenerima': setNamaPenerima(value); break;
-			case 'nomorIndukPenerima': setNomorIndukPenerima(value); break;
-			case 'nomorTeleponPenerima': setNomorTeleponPenerima(value); break;
-			case 'namaPemilikRekening': setNamaPemilikRekening(value); break;
-			case 'namaBank': setNamaBank(value); break;
-			case 'nomorRekening': setNomorRekening(value); break;
-			case 'kategori': setKategori(value); break;
-			case 'waktuBerakhir': setWaktuBerakhir(value); break;
-			case 'kebutuhanDana': setKebutuhanDana(value); break;
-			default: break;
-		}
-	};
-
-	const validateFormBeasiswa = () => {
-		const fields = ['judulGalangDana', 'deskripsi', 'targetDana', 'targetPenerima'];
-		const newErrors = {};
-		let isValid = true;
-
-		fields.forEach(field => {
-			const error = validateField(field, eval(field));
-			newErrors[field] = error;
-			if (error) isValid = false;
-		});
-
-		setErrors(newErrors);
-		return isValid;
-	};
-
-	const validateFormNonBeasiswa = () => {
-		const fields = [
-			'namaPenanggungJawab', 'nomorIndukPenanggungJawab', 'nomorTeleponPenanggungJawab',
-			'namaPenerima', 'nomorIndukPenerima', 'nomorTeleponPenerima',
-			'namaPemilikRekening', 'namaBank', 'nomorRekening',
-			'judulGalangDana', 'kategori', 'deskripsi', 'waktuBerakhir', 'kebutuhanDana'
-		];
-		const newErrors = {};
-		let isValid = true;
-
-		fields.forEach(field => {
-			const error = validateField(field, eval(field));
-			newErrors[field] = error;
-			if (error) isValid = false;
-		});
-
-		setErrors(newErrors);
-		return isValid;
-	};
 
 	const handleOpenImportData = () => {
 		setOpenModalImportData(true);
@@ -213,22 +72,80 @@ function Dashboard() {
 		setUploadStatus(null);
 	};
 
+	const handleJudulGalangDanaChange = (val) => {
+		setJudulGalangDana(val)
+	}
+	const handleDeskripsiChange = (val) => {
+		setDeskripsi(val)
+	}
+	const handleTargetPenerimaChange = (val) => {
+		setTargetPenerima(val)
+	}
+	const handleTargetDana = (val) => {
+		setTargetDana(val)
+	}
+	const handleNamaPenanggungJawabChange = (val) => {
+		setNamaPenanggungJawab(val)
+	}
+	const handleNomorIndukPenanggungJawabChange = (val) => {
+		setNomorIndukPenanggungJawab(val)
+	}
+	const handleNomorTeleponPenanggungJawabChange = (val) => {
+		setNomorTeleponPenanggungJawab(val)
+	}
+	const handleNomorRekeningChange = (val) => {
+		setNomorRekening(val)
+	}
+	const handleNamaPemilikRekeningChange = (val) => {
+		setNamaPemilikRekening(val)
+	}
+	const handleNamaBankChange = (val) => {
+		setNamaBank(val)
+	}
+	const handleWaktuBerakhirChange = (val) => {
+		setWaktuBerakhir(val)
+	}
+	const handleKebutuhanDanaChange = (val) => {
+		setKebutuhanDana(val)
+	}
+	const handleNamaPenerimaChange = (val) => {
+		setNamaPenerima(val)
+	}
+	const handleNomorIndukPenerimaChange = (val) => {
+		setNomorIndukPenerima(val)
+	}
+	const handleNomorTeleponPenerimaChange = (val) => {
+		setNomorTeleponPenerima(val)
+	}
+	const handleKategoriChange = (val) => {
+		setKategori(val)
+	}
+	const open = Boolean(anchorEl)
+	const handleCloseMenu = () => setAnchorEl(null)
+	const handleClick = (event) => {
+		setAnchorEl(event.currentTarget);
+	};
+	const cardList = [
+		{ title: 'Pengajuan Bantuan Dana Non Beasiswa', description: 'Pengajuan', value: jumlahPengajuan },
+		{ title: 'Penggalangan Dana Berlangsung', description: 'Penggalangan Dana', value: jumlahPenerimaBantuan },
+		{ title: 'Daftar Donasi', description: 'Donatur', value: jumlahDonasi },
+		{ title: 'Dana Terkumpul', description: 'Total Dana Terkumpul', value: jumlahDana }
+	]
+	var menuList = cardList;
+	const location = useLocation()
+	const currentLocationData = menuList.reduce((result, item) => item.url === location.pathname ? [...result, item] : result, []);
 	const handleOpen = () => {
 		setOpenModal(true);
 		setAnchorEl(null);
 	};
-
 	const handleOpenNonBeasiswa = () => {
 		setOpenModalNonBeasiswa(true);
 		setAnchorEl(null);
-	};
-
+	}
 	const handleOpenGalangDana = () => {
-		if (validateFormNonBeasiswa()) {
-			setOpenModalGalangDana(true);
-			setOpenModalNonBeasiswa(false);
-		}
-	};
+		setOpenModalGalangDana(true);
+		setOpenModalNonBeasiswa(false);
+	}
 
 	const handleCloseModalGalangDana = () => setOpenModalGalangDana(false);
 	const handleCloseModal = () => setOpenModal(false);
@@ -249,8 +166,8 @@ function Dashboard() {
 		'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': ['.xlsx'],
 		},
 		onDrop: (acceptedFiles) => {
-			setUploadedFile(acceptedFiles[0]);
-			setUploadStatus(null);
+		setUploadedFile(acceptedFiles[0]);
+		setUploadStatus(null);
 		},
 		multiple: false,
 	});
@@ -262,22 +179,22 @@ function Dashboard() {
 
 	const importDataCivitasAkademika = async () => {
 		if (!uploadedFile) {
-			setUploadStatus({ type: 'error', message: 'Silakan unggah file terlebih dahulu.' });
-			return;
+		setUploadStatus({ type: 'error', message: 'Silakan unggah file terlebih dahulu.' });
+		return;
 		}
 
-		const maxSize = 5 * 1024 * 1024; 
+		// Validasi ukuran file (maksimum 5MB)
+		const maxSize = 5 * 1024 * 1024; // 5MB dalam byte
 		if (uploadedFile.size > maxSize) {
-			setUploadStatus({ type: 'error', message: 'Ukuran file melebihi 5MB. Silakan unggah file yang lebih kecil.' });
-			return;
+		setUploadStatus({ type: 'error', message: 'Ukuran file melebihi 5MB. Silakan unggah file yang lebih kecil.' });
+		return;
 		}
-
 
 		// Validasi ekstensi file
 		const validExtensions = ['.xlsx'];
 		const fileExtension = uploadedFile.name.slice(((uploadedFile.name.lastIndexOf('.') - 1) >>> 0) + 2).toLowerCase();
 		if (!validExtensions.includes(`.${fileExtension}`)) {
-		setUploadStatus({ type: 'error', message: 'File harus berupa atau .xlsx.' });
+		setUploadStatus({ type: 'error', message: 'File harus berupa .xlsx.' });
 		return;
 		}
 
@@ -288,66 +205,65 @@ function Dashboard() {
 		formData.append('file', uploadedFile);
 
 		try {
-			const controller = new AbortController();
-			const timeoutId = setTimeout(() => controller.abort(), 30000);
+		const controller = new AbortController();
+		const timeoutId = setTimeout(() => controller.abort(), 30000); // Timeout 30 detik
 
-			const response = await fetch(
-				'http://localhost:8000/v1/civitas_akademika/importExcelCivitasAkademika',
-				{
-					method: 'POST',
-					headers: {
-						Accept: 'application/json',
-						'Access-Control-Allow-Origin': '*',
-					},
-					body: formData,
-					signal: controller.signal,
-				}
-			);
-
-			clearTimeout(timeoutId);
-
-			const data = await response.json();
-
-			if (!response.ok) {
-				if (data.response_message && data.response_message.includes('nomor_induk')) {
-					setUploadStatus({
-						type: 'error',
-						message: 'Gagal memperbarui data. Silakan coba lagi atau periksa format file pada nomor induk anda.',
-					});
-				} else if (data.response_message && data.response_message.includes('nama')) {
-					setUploadStatus({
-						type: 'error',
-						message: 'Gagal memperbarui data. Silakan periksa kolom nama pada file Anda.',
-					});
-				} else {
-					setUploadStatus({
-						type: 'error',
-						message: data.response_message || 'Gagal memperbarui data. Silakan coba lagi atau periksa format file Anda.',
-					});
-				}
-			} else {
-				setUploadStatus({ type: 'success', message: 'Data berhasil diperbarui!' });
-				setTimeout(() => {
-					handleCloseModalImportData();
-				}, 1500);
+		const response = await fetch(
+			'http://localhost:8000/v1/civitas_akademika/importExcelCivitasAkademika',
+			{
+			method: 'POST',
+			headers: {
+				Accept: 'application/json',
+				'Access-Control-Allow-Origin': '*',
+			},
+			body: formData,
+			signal: controller.signal,
 			}
+		);
+
+		clearTimeout(timeoutId);
+
+		const data = await response.json();
+
+		if (!response.ok) {
+			if (data.response_message && data.response_message.includes('nomor_induk')) {
+			setUploadStatus({
+				type: 'error',
+				message: 'Gagal memperbarui data. Silakan coba lagi atau periksa format file pada nomor induk anda.',
+			});
+			} else if (data.response_message && data.response_message.includes('nama')) {
+			setUploadStatus({
+				type: 'error',
+				message: 'Gagal memperbarui data. Silakan periksa kolom nama pada file Anda.',
+			});
+			} else {
+			setUploadStatus({
+				type: 'error',
+				message: data.response_message || 'Gagal memperbarui data. Silakan coba lagi atau periksa format file Anda.',
+			});
+			}
+		} else {
+			setUploadStatus({ type: 'success', message: 'Data berhasil diperbarui!' });
+			setTimeout(() => {
+			handleCloseModalImportData();
+			}, 1500);
+		}
 		} catch (err) {
-			if (err.name === 'AbortError') {
-				setUploadStatus({
-					type: 'error',
-					message: 'Waktu koneksi habis. Silakan coba lagi nanti.',
-				});
-			} else {
-				setUploadStatus({
-					type: 'error',
-					message: 'Terjadi kesalahan saat mengunggah file. Silakan coba lagi nanti.',
-				});
-			}
+		if (err.name === 'AbortError') {
+			setUploadStatus({
+			type: 'error',
+			message: 'Waktu koneksi habis. Silakan coba lagi nanti.',
+			});
+		} else {
+			setUploadStatus({
+			type: 'error',
+			message: 'Terjadi kesalahan saat mengunggah file. Silakan coba lagi nanti.',
+			});
+		}
 		} finally {
-			setIsUploading(false);
+		setIsUploading(false);
 		}
 	};
-
 	const getTotalCalonPengajuan = async () => {
 		await fetch(
 			'http://localhost:8000/v1/pengajuan/pengajuan_bantuan/getTotalCalonPengajuan',
@@ -370,8 +286,8 @@ function Dashboard() {
 				arrayData.push(data.data)
 				setJumlahPengajuan(arrayData)
 			})
-	}
 
+	}
 	const getTotalDanaTerkumpul = async () => {
 		await fetch(
 			'http://localhost:8000/v1/penggalangan/donasi/getTotalAllDonasi',
@@ -391,7 +307,6 @@ function Dashboard() {
 				setJumlahDana(arrayData)
 			})
 	}
-
 	const getTotalNewDonasi = async () => {
 		await fetch(
 			'http://localhost:8000/v1/penggalangan/donasi/getTotalNewDonasi',
@@ -411,7 +326,6 @@ function Dashboard() {
 				setJumlahDonasi(arrayData)
 			})
 	}
-
 	const getTotalPenerimaBantuan = async () => {
 		await fetch(
 			'http://localhost:8000/v1/pengajuan/pengajuan_bantuan/getTotalPenerimaBantuan',
@@ -431,17 +345,13 @@ function Dashboard() {
 				setJumlahPenerimaBantuan(arrayData)
 			})
 	}
-
 	React.useEffect(() => {
 		getTotalPenerimaBantuan()
 		getTotalNewDonasi()
 		getTotalCalonPengajuan()
 		getTotalDanaTerkumpul()
 	}, [])
-
 	const createPenggalanganDanaBeasiswa = async () => {
-		if (!validateFormBeasiswa()) return;
-
 		await fetch('http://localhost:8000/v1/penggalangan/penggalangan_dana/createPenggalanganDanaBeasiswa',
 			{
 				mode: 'cors',
@@ -461,16 +371,12 @@ function Dashboard() {
 			.then((response) => response.json())
 			.then((data) => {
 				console.log(data.id, 'test id');
-				setOpenModal(false);
 			})
 			.catch((err) => {
 				console.log(err.message);
 			})
 	}
-
 	const createPenggalanganDanaNonBeasiswa = async () => {
-		if (!validateFormNonBeasiswa()) return;
-
 		await fetch('http://localhost:8000/v1/penggalangan/penggalangan_dana/createPenggalanganDanaNonBeasiswa',
 			{
 				mode: 'cors',
@@ -487,7 +393,7 @@ function Dashboard() {
 					nomor_rekening: nomorRekening,
 					nama_pemilik_rekening: namaPemilikRekening,
 					nama_bank: namaBank,
-					judul_galang_dana: judulGalangDana,
+					judul_galang_dana: judul,
 					waktu_galang_dana: waktuBerakhir,
 					deskripsi_galang_dana: deskripsi,
 					dana_yang_dibutuhkan: kebutuhanDana,
@@ -500,13 +406,11 @@ function Dashboard() {
 			.then((response) => response.json())
 			.then((data) => {
 				console.log(data.id, 'test id');
-				setOpenModalGalangDana(false);
 			})
 			.catch((err) => {
 				console.log(err.message);
 			})
 	}
-
 	const kategoriSelect = [
 		{
 			value: 'Medis',
@@ -521,7 +425,6 @@ function Dashboard() {
 			label: 'Duka'
 		}
 	]
-
 	const jumlahPenerima = [
 		{
 			value: 1,
@@ -544,23 +447,6 @@ function Dashboard() {
 			label: '5',
 		},
 	]
-
-	const cardList = [
-		{ title: 'Pengajuan Bantuan Dana Non Beasiswa', description: 'Pengajuan', value: jumlahPengajuan },
-		{ title: 'Penggalangan Dana Berlangsung', description: 'Penggalangan Dana', value: jumlahPenerimaBantuan },
-		{ title: 'Daftar Donasi', description: 'Donatur', value: jumlahDonasi },
-		{ title: 'Dana Terkumpul', description: 'Total Dana Terkumpul', value: jumlahDana }
-	]
-
-	const open = Boolean(anchorEl)
-	const handleCloseMenu = () => setAnchorEl(null)
-	const handleClick = (event) => {
-		setAnchorEl(event.currentTarget);
-	};
-
-	const location = useLocation()
-	const currentLocationData = cardList.reduce((result, item) => item.url === location.pathname ? [...result, item] : result, []);
-
 	return (
 		<Container
 			disableGutters
@@ -594,7 +480,6 @@ function Dashboard() {
 						id="basic-menu"
 						anchorEl={anchorEl}
 						open={open}
-						onClose={handleCloseMenu}
 						MenuListProps={{
 							'aria-labelledby': 'basic-button',
 						}}
@@ -604,27 +489,48 @@ function Dashboard() {
 					</Menu>
 					<Button variant="outlined" sx={{ ml: 2 }} onClick={handleOpenImportData}>
 						<Typography>Import Data</Typography>
-					</Button>
-				</Box>
+						</Button>
+					</Box>
 			
-				<Modal open={openModalImportData} onClose={handleCloseModalImportData}>
-					<Fade in={openModalImportData}>
+					{/* Modal Impor Data dengan Fitur yang Ditingkatkan */}
+					<Modal open={openModalImportData} onClose={handleCloseModalImportData}>
+						<Fade in={openModalImportData}>
 						<Box sx={styleBox}>
 							<Box
+							sx={{
+								backgroundColor: '#1559E6',
+								borderRadius: '4px 4px 0 0',
+								p: 2,
+							}}
+							>
+							<Typography variant="h3" color={'white'}>
+								Import Data Civitas Akademika JTK POLBAN
+							</Typography>
+							</Box>
+							<Box sx={{ p: 2 }}>
+							<Box
+								{...getRootProps()}
 								sx={{
-									backgroundColor: '#1559E6',
-									borderRadius: '4px 4px 0 0',
-									p: 2,
+								border: '2px dashed #1559E6',
+								borderRadius: '4px',
+								p: 4,
+								textAlign: 'center',
+								bgcolor: isDragActive ? '#e3f2fd' : '#f5f5f5',
+								cursor: 'pointer',
+								transition: 'background-color 0.3s ease',
+								'&:hover': {
+									bgcolor: '#e3f2fd',
+								},
 								}}
 							>
 								<input {...getInputProps()} />
 								<CloudUploadIcon sx={{ fontSize: 40, color: '#1559E6', mb: 1 }} />
 								{isDragActive ? (
-								<Typography>Letakkan berkas di sini...</Typography>
+								<Typography>Drop the file here...</Typography>
 								) : uploadedFile ? (
 								<Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
 									<Typography sx={{ mr: 1 }}>
-									Berkas yang diunggah: {uploadedFile.name}
+									Selected file: {uploadedFile.name}
 									</Typography>
 									<IconButton onClick={handleRemoveFile} size="small">
 									<CancelIcon sx={{ color: '#1559E6' }} />
@@ -632,90 +538,56 @@ function Dashboard() {
 								</Box>
 								) : (
 								<Typography>
-									Seret dan lepaskan berkas Excel (.xlsx) di sini, atau klik di sini untuk mengunggah berkas
+									Drag and drop an Excel file (.xlsx) here, or click to select a file
 								</Typography>
-							</Box>
-							<Box sx={{ p: 2 }}>
-								<Box
-									{...getRootProps()}
-									sx={{
-										border: '2px dashed #1559E6',
-										borderRadius: '4px',
-										p: 4,
-										textAlign: 'center',
-										bgcolor: isDragActive ? '#e3f2fd' : '#f5f5f5',
-										cursor: 'pointer',
-										transition: 'background-color 0.3s ease',
-										'&:hover': {
-											bgcolor: '#e3f2fd',
-										},
-									}}
-								>
-									<input {...getInputProps()} />
-									<CloudUploadIcon sx={{ fontSize: 40, color: '#1559E6', mb: 1 }} />
-									{isDragActive ? (
-										<Typography>Drop the file here...</Typography>
-									) : uploadedFile ? (
-										<Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-											<Typography sx={{ mr: 1 }}>
-												Selected file: {uploadedFile.name}
-											</Typography>
-											<IconButton onClick={handleRemoveFile} size="small">
-												<CancelIcon sx={{ color: '#1559E6' }} />
-											</IconButton>
-										</Box>
-									) : (
-										<Typography>
-											Drag and drop an Excel file (.xls, .xlsx) here, or click to select a file
-										</Typography>
-									)}
-								</Box>
-			
-								{uploadStatus && (
-									<Fade in={!!uploadStatus}>
-										<Box sx={{ mt: 2 }}>
-											<Alert severity={uploadStatus.type}>{uploadStatus.message}</Alert>
-										</Box>
-									</Fade>
 								)}
+							</Box>
 			
-								<Box
-									sx={{
-										display: 'flex',
-										justifyContent: 'flex-end',
-										mt: 2,
-									}}
-								>
-									<Button
-										variant="outlined"
-										startIcon={<DownloadIcon />}
-										onClick={handleDownloadTemplate}
-										sx={{ mr: 'auto' }}
-									>
-										Download Template
-									</Button>
-									<Button
-										variant="contained"
-										onClick={importDataCivitasAkademika}
-										disabled={!uploadedFile || isUploading}
-										startIcon={isUploading && <CircularProgress size={20} />}
-										sx={{ minWidth: 100, ml: 1 }}
-									>
-										{isUploading ? 'Uploading...' : 'Submit'}
-									</Button>
-									<Button
-										variant="outlined"
-										onClick={handleCloseModalImportData}
-										sx={{ ml: 1 }}
-										disabled={isUploading}
-									>
-										Cancel
-									</Button>
+							{uploadStatus && (
+								<Fade in={!!uploadStatus}>
+								<Box sx={{ mt: 2 }}>
+									<Alert severity={uploadStatus.type}>{uploadStatus.message}</Alert>
 								</Box>
+								</Fade>
+							)}
+			
+							<Box
+								sx={{
+								display: 'flex',
+								justifyContent: 'flex-end',
+								mt: 2,
+								}}
+							>
+								<Button
+									variant="outlined"
+									startIcon={<DownloadIcon />}
+									onClick={handleDownloadTemplate}
+									sx={{ mr: 'auto' }}
+								>
+									Download Template
+								</Button>
+								<Button
+								variant="contained"
+								onClick={importDataCivitasAkademika}
+								disabled={!uploadedFile || isUploading}
+								startIcon={isUploading && <CircularProgress size={20} />}
+								sx={{ minWidth: 100, ml: 1 }}
+								>
+								{isUploading ? 'Uploading...' : 'Submit'}
+								</Button>
+								<Button
+								variant="outlined"
+								onClick={handleCloseModalImportData}
+								sx={{ ml: 1 }}
+								disabled={isUploading}
+								>
+								Cancel
+								</Button>
+							</Box>
 							</Box>
 						</Box>
-					</Fade>
-				</Modal>
+						</Fade>
+					</Modal>
 				<Modal
 					open={openModal}
 					onClose={handleCloseModal}
@@ -726,64 +598,32 @@ function Dashboard() {
 						<Box sx={{ backgroundColor: '#1559E6', borderRadius: '4px 4px 0 0', p: 2 }}>
 							<Typography variant='h3' color={'white'}>Formulir Galang Dana Beasiswa</Typography>
 						</Box>
-						<Box sx={{ p: 2 }}>
+						<Box sx={{ p: 2, }}>
 							<Box sx={{display: 'flex'}}>
 								<Box sx={{ width: '100%'}}>
 									<Typography>Judul Galang Dana</Typography>
-									<TextField 
-										size='small' 
-										variant='outlined' 
-										label='cth: Beasiswa JTK' 
-										onChange={(e) => handleInputChange('judulGalangDana', e.target.value)} 
-										sx={{width: '100%'}} 
-										error={!!errors.judulGalangDana}
-										helperText={errors.judulGalangDana}
-									/>
+									<TextField size='small' variant='outlined' label='cth: Beasiswa JTK' onChange={(val) => { handleJudulGalangDanaChange(val.target.value) }} sx={{width: '100%'}} />
 								</Box>
 								<Box sx={{ml: 2, width: '100%'}}>
 									<Typography>Target Penerima</Typography>
-									<TextField 
-										select 
-										size='small' 
-										variant='outlined' 
-										label='cth: 6' 
-										onChange={(e) => handleInputChange('targetPenerima', e.target.value)} 
-										sx={{width: '100%'}} 
-										error={!!errors.targetPenerima}
-										helperText={errors.targetPenerima}
-									>
-										{jumlahPenerima.map((option) => (
-											<MenuItem key={option.value} value={option.value}>
-												{option.label}
-											</MenuItem>
-										))}
+									<TextField select size='small' variant='outlined' label='cth: 6' onChange={(val) => { handleTargetPenerimaChange(val.target.value) }} sx={{width: '100%'}} >
+										{
+											jumlahPenerima.map((option) => (
+												<MenuItem key={option.value} value={option.value}>
+													{option.label}
+												</MenuItem>
+											))
+										}
 									</TextField>
 								</Box>
 								<Box sx={{ml: 2, width: '100%'}}>
 									<Typography>Target Bantuan Dana</Typography>
-									<TextField 
-										size='small' 
-										variant='outlined' 
-										label='cth: 600000' 
-										onChange={(e) => handleInputChange('targetDana', e.target.value)}
-										sx={{width: '100%'}}
-										error={!!errors.targetDana}
-										helperText={errors.targetDana}
-									/>
+									<TextField size='small' variant='outlined' label='cth: 600000' onChange={(val) => { handleTargetDana(val.target.value)}} sx={{width: '100%'}}/>
 								</Box>
 							</Box>
 							<Box sx={{ display: 'flex', flexDirection: 'column', pt: 2 }}>
 								<Typography>Deskripsi Galang Dana</Typography>
-								<TextField 
-									size='small' 
-									variant='outlined' 
-									label='Deskripsi' 
-									onChange={(e) => handleInputChange('deskripsi', e.target.value)}
-									multiline
-									rows={4}
-									error={!!errors.deskripsi}
-									helperText={errors.deskripsi}
-								/>
+								<TextField size='small' variant='outlined' label='Deskprisi' onChange={(val) => { handleDeskripsiChange(val.target.value) }}/>
 							</Box>
 							<Box sx={{ pt: 2, display: 'flex', justifyContent: 'flex-end' }}>
 								<Button variant='contained' onClick={createPenggalanganDanaBeasiswa}>Submit</Button>
@@ -809,39 +649,15 @@ function Dashboard() {
 							<Box sx={{ pt: 1, display: 'flex', width: '100%' }}>
 								<Box>
 									<Typography>Nama</Typography>
-									<TextField 
-										size='small' 
-										variant='outlined' 
-										label='cth: Hasbi' 
-										sx={{width: '100%'}} 
-										onChange={(e) => handleInputChange('namaPenanggungJawab', e.target.value)}
-										error={!!errors.namaPenanggungJawab}
-										helperText={errors.namaPenanggungJawab}
-									/>
+									<TextField size='small' variant='outlined' label='cth: Hasbi' sx={{width: '100%'}} onChange={(val) => {handleNamaPenanggungJawabChange(val.target.value)}}/>
 								</Box>
 								<Box sx={{ ml: 2 }}>
 									<Typography>NIM/NIP</Typography>
-									<TextField 
-										size='small' 
-										variant='outlined' 
-										label='cth: 081424001' 
-										sx={{width: '100%'}} 
-										onChange={(e) => handleInputChange('nomorIndukPenanggungJawab', e.target.value)}
-										error={!!errors.nomorIndukPenanggungJawab}
-										helperText={errors.nomorIndukPenanggungJawab}
-									/>
+									<TextField size='small' variant='outlined' label='cth: 081424001' sx={{width: '100%'}} onChange={(val) => {handleNomorIndukPenanggungJawabChange(val.target.value)}}/>
 								</Box>
 								<Box sx={{ ml: 2 }}>
 									<Typography>No Telepon</Typography>
-									<TextField 
-										size='small' 
-										variant='outlined' 
-										label='cth: 082121441234' 
-										sx={{width: '100%'}} 
-										onChange={(e) => handleInputChange('nomorTeleponPenanggungJawab', e.target.value)}
-										error={!!errors.nomorTeleponPenanggungJawab}
-										helperText={errors.nomorTeleponPenanggungJawab}
-									/>
+									<TextField size='small' variant='outlined' label='cth: 082121441234' sx={{width: '100%'}} onChange={(val) => {handleNomorTeleponPenanggungJawabChange(val.target.value)}} />
 								</Box>
 							</Box>
 							<Box sx={{ pb: 1, pt: 3 }}>
@@ -851,78 +667,31 @@ function Dashboard() {
 							<Box sx={{ display: 'flex', mt: 1 }}>
 								<Box>
 									<Typography>Nama</Typography>
-									<TextField 
-										size='small' 
-										variant='outlined' 
-										label='cth: John Doe' 
-										sx={{ width: '100%' }} 
-										onChange={(e) => handleInputChange('namaPenerima', e.target.value)}
-										error={!!errors.namaPenerima}
-										helperText={errors.namaPenerima}
-									/>
+									<TextField size='small' variant='outlined' label='cth: John Doe' sx={{ width: '100%' }} onChange={(val) => {handleNamaPenerimaChange(val.target.value)}}/>
 								</Box>
 								<Box sx={{ml: 2}}>
 									<Typography>NIM/NIP</Typography>
-									<TextField 
-										size='small' 
-										variant='outlined' 
-										label='cth: 191524024' 
-										sx={{ width: '100%' }} 
-										onChange={(e) => handleInputChange('nomorIndukPenerima', e.target.value)}
-										error={!!errors.nomorIndukPenerima}
-										helperText={errors.nomorIndukPenerima}
-									/>
+									<TextField size='small' variant='outlined' label='cth: 191524024' sx={{ width: '100%' }} onChange={(val) => {handleNomorIndukPenerimaChange(val.target.value)}}/>
 								</Box>
 								<Box sx={{ml: 2}}>
 									<Typography>No Telepon</Typography>
-									<TextField 
-										size='small' 
-										variant='outlined' 
-										label='cth: 082121441234' 
-										sx={{ width: '100%' }} 
-										onChange={(e) => handleInputChange('nomorTeleponPenerima', e.target.value)}
-										error={!!errors.nomorTeleponPenerima}
-										helperText={errors.nomorTeleponPenerima}
-									/>
+									<TextField size='small' variant='outlined' label='cth: 082121441234' sx={{ width: '100%' }} onChange={(val) => {handleNomorTeleponPenerimaChange(val.target.value)}}/>
 								</Box>
 							</Box>
 							<Box sx={{ display: 'flex', mt: 1}}>
 								<Box >
 									<Typography>Nama Pemilik Rekening</Typography>
-									<TextField 
-										size='small' 
-										variant='outlined' 
-										label='cth: Hasbi Islahi' 
-										sx={{ width: '100%' }} 
-										onChange={(e) => handleInputChange('namaPemilikRekening', e.target.value)}
-										error={!!errors.namaPemilikRekening}
-										helperText={errors.namaPemilikRekening}
-									/>
+									<TextField size='small' variant='outlined' label='cth: Hasbi Islahi' sx={{ width: '100%' }} onChange={(val) => {handleNamaPemilikRekeningChange(val.target.value)}}/>
 								</Box>
 								<Box sx={{ml: 2}}>
 									<Typography>Bank Rekening</Typography>
-									<TextField 
-										size='small' 
-										variant='outlined' 
-										label='cth: Mandiri' 
-										sx={{ width: '100%' }} 
-										onChange={(e) => handleInputChange('namaBank', e.target.value)}
-										error={!!errors.namaBank}
-										helperText={errors.namaBank}
-									/>
+									<TextField size='small' variant='outlined' label='cth: Mandiri' sx={{ width: '100%' }} onChange={(val) => {handleNamaBankChange(val.target.value)}}/>
 								</Box>
 								<Box sx={{ ml: 2 }}>
 									<Typography>Nomor Rekening</Typography>
-									<TextField 
-										size='small' 
-										variant='outlined' 
-										label='cth: 13000462110001' 
-										sx={{ width: '100%' }} 
-										onChange={(e) => handleInputChange('nomorRekening', e.target.value)}
-										error={!!errors.nomorRekening}
-										helperText={errors.nomorRekening}
-									/>
+									<TextField size='small' variant='outlined' label='cth: 13000462110001' sx={{ width: '100%' }} onChange={(val) => {handleNomorRekeningChange(val.target.value)}}/>
 								</Box>
+								
 							</Box>
 							<Box sx={{ pt: 2, display: 'flex', justifyContent: 'flex-end' }}>
 								<Button variant='contained' onClick={handleOpenGalangDana}>Selanjutnya</Button>
@@ -948,73 +717,33 @@ function Dashboard() {
 							<Box sx={{ display: 'flex', pt: 1, width: '100%' }}>
 								<Box sx={{width: '100%'}}>
 									<Typography>Judul Galang Dana</Typography>
-									<TextField 
-										size='small' 
-										variant='outlined' 
-										label='cth: Bantuan Dana Penyakit Usus Buntu' 
-										sx={{ width: '100%' }} 
-										onChange={(e) => handleInputChange('judulGalangDana', e.target.value)}
-										error={!!errors.judulGalangDana}
-										helperText={errors.judulGalangDana}
-									/>
+									<TextField size='small' variant='outlined' label='cth: Bantuan Dana Penyakit Usus Buntu' sx={{ width: '100%' }} onChange={(val) => {handleJudulGalangDanaChange(val.target.value)}}/>
 								</Box>
 								<Box sx={{ml: 2, width: '100%'}}>
 									<Typography>Kategori Bantuan</Typography>
-									<TextField 
-										select 
-										size='small' 
-										variant='outlined' 
-										label='cth: Beasiswa JTK' 
-										sx={{ width: '100%' }} 
-										onChange={(e) => handleInputChange('kategori', e.target.value)}
-										error={!!errors.kategori}
-										helperText={errors.kategori}
-									>
-										{kategoriSelect.map((option) => (
-											<MenuItem key={option.value} value={option.value}>
-												{option.label}
-											</MenuItem>
-										))}
+									<TextField select size='small' variant='outlined' label='cth: Beasiswa JTK' sx={{ width: '100%' }} onChange={(val) => {handleKategoriChange(val.target.value)}}>
+									{
+											kategoriSelect.map((option) => (
+												<MenuItem key={option.value} value={option.value}>
+													{option.label}
+												</MenuItem>
+											))
+										}
 									</TextField>
 								</Box>
 							</Box>
 							<Box sx={{ pt: 1 }}>
 								<Typography>Deskripsi</Typography>
-								<TextField 
-									size='small' 
-									variant='outlined' 
-									label='cth: Bantuan dana untuk menanggulangi kebakaran rumah salah satu keluarga kita' 
-									sx={{ width: '468px' }} 
-									onChange={(e) => handleInputChange('deskripsi', e.target.value)}
-									multiline
-									rows={4}
-									error={!!errors.deskripsi}
-									helperText={errors.deskripsi}
-								/>
+								<TextField size='small' variant='outlined' label='cth: Bantuan dana untuk menanggulangi kebakaran rumah salah satu keluarga kita' sx={{ width: '468px' }} onChange={(val) => {handleDeskripsiChange(val.target.value)}}/>
 							</Box>
 							<Box sx={{ display: 'flex', pt: 1, width: '100%'}}>
 								<Box sx={{width: '100%'}}>
 									<Typography>Tanggal Berakhir</Typography>
-									<TextField 
-										size='small' 
-										type='date' 
-										sx={{ width: '100%' }} 
-										onChange={(e) => handleInputChange('waktuBerakhir', e.target.value)}
-										error={!!errors.waktuBerakhir}
-										helperText={errors.waktuBerakhir}
-									/>
+									<TextField size='small' type='date' sx={{ width: '100%' }} onChange={(val) => {handleWaktuBerakhirChange(val.target.value)}}/>
 								</Box>
 								<Box sx={{ ml: 2, width: '100%' }}>
 									<Typography>Nominal Dana Dibutuhkan</Typography>
-									<TextField 
-										size='small' 
-										variant='outlined' 
-										label='cth: 5000000' 
-										sx={{ width: '100%' }} 
-										onChange={(e) => handleInputChange('kebutuhanDana', e.target.value)}
-										error={!!errors.kebutuhanDana}
-										helperText={errors.kebutuhanDana}
-									/>
+									<TextField size='small' variant='outlined' label='cth: 5000000' sx={{ width: '100%' }} onChange={(val) => {handleKebutuhanDanaChange(val.target.value)}}/>
 								</Box>
 							</Box>
 						</Box>
@@ -1027,8 +756,9 @@ function Dashboard() {
 			</Box>
 			<Box >
 				<Grid container spacing={2}>
-					{cardList.map((info, index) => (
-						<Grid item md={6} key={index}>
+					{cardList.map((info, index) =>
+					(
+						<Grid item md={6} >
 							<CardInfo title={info.title} description={info.description} value={info.value} index={index} />
 						</Grid>
 					))}
