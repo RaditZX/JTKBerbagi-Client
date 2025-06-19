@@ -13,10 +13,17 @@ import Modal from '@mui/material/Modal';
 import TextField from '@mui/material/TextField';
 import Divider from '@mui/material/Divider';
 import { useLocation, Link } from 'react-router-dom';
+
+
+import AutoComplete from '../components/molekul/autocomplete/AutoComplete';
+
 import { useDropzone } from 'react-dropzone';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import CancelIcon from '@mui/icons-material/Cancel';
-import DownloadIcon from '@mui/icons-material/Download'
+import DownloadIcon from '@mui/icons-material/Download';
+
+// import Item from '@mui/material';
+
 
 function Dashboard() {
 	const styleBox = {
@@ -44,8 +51,8 @@ function Dashboard() {
 	const [anchorEl, setAnchorEl] = React.useState(null);
 	const [jumlahPengajuan, setJumlahPengajuan] = React.useState('')
 	const [jumlahDana, setJumlahDana] = React.useState('')
-	const [namaPenanggungJawab, setNamaPenanggungJawab] = React.useState([]);
-	const [nomorIndukPenanggungJawab, setNomorIndukPenanggungJawab] = React.useState([]);
+	const [namaPenanggungJawab, setNamaPenanggungJawab] = React.useState('');
+	const [nomorIndukPenanggungJawab, setNomorIndukPenanggungJawab] = React.useState('');
 	const [nomorTeleponPenanggungJawab, setNomorTeleponPenanggungJawab] = React.useState([]);
 	const [nomorRekening, setNomorRekening] = React.useState([]);
 	const [namaPemilikRekening, setNamaPemilikRekening] = React.useState([]);
@@ -53,8 +60,8 @@ function Dashboard() {
 	const [judul, setJudul] = React.useState([]);
 	const [waktuBerakhir, setWaktuBerakhir] = React.useState([]);
 	const [kebutuhanDana, setKebutuhanDana] = React.useState([]);
-	const [namaPenerima, setNamaPenerima] = React.useState([]);
-	const [nomorIndukPenerima, setNomorIndukPenerima] = React.useState([]);
+	const [namaPenerima, setNamaPenerima] = React.useState('');
+	const [nomorIndukPenerima, setNomorIndukPenerima] = React.useState('');
 	const [nomorTeleponPenerima, setNomorTeleponPenerima] = React.useState([]);
 	const [kategori, setKategori] = React.useState([]);
 	const [judulGalangDana, setJudulGalangDana] = React.useState([]);
@@ -85,10 +92,20 @@ function Dashboard() {
 		setTargetDana(val)
 	}
 	const handleNamaPenanggungJawabChange = (val) => {
-		setNamaPenanggungJawab(val)
+	    if (typeof val === 'object' && val !== null) {
+			setNamaPenanggungJawab(val.nama || '');
+			setNomorIndukPenanggungJawab(val.nomor_induk || '');
+		} else {
+			setNamaPenanggungJawab(val); // allow manual input
+		}
 	}
 	const handleNomorIndukPenanggungJawabChange = (val) => {
-		setNomorIndukPenanggungJawab(val)
+	    if (typeof val === 'object' && val !== null) {
+			setNomorIndukPenanggungJawab(val.nomor_induk || '');
+			setNamaPenanggungJawab(val.nama || '');
+		} else {
+			setNomorIndukPenanggungJawab(val); // allow manual input
+		}
 	}
 	const handleNomorTeleponPenanggungJawabChange = (val) => {
 		setNomorTeleponPenanggungJawab(val)
@@ -109,10 +126,20 @@ function Dashboard() {
 		setKebutuhanDana(val)
 	}
 	const handleNamaPenerimaChange = (val) => {
-		setNamaPenerima(val)
+	    if (typeof val === 'object' && val !== null) {
+			setNamaPenerima(val.nama || '');
+			setNomorIndukPenerima(val.nomor_induk || '');
+		} else {
+			setNamaPenerima(val); // allow manual input
+		}
 	}
 	const handleNomorIndukPenerimaChange = (val) => {
-		setNomorIndukPenerima(val)
+	    if (typeof val === 'object' && val !== null) {
+			setNomorIndukPenerima(val.nomor_induk || '');
+			setNamaPenerima(val.nama || '');
+		} else {
+			setNomorIndukPenerima(val || '');
+		}
 	}
 	const handleNomorTeleponPenerimaChange = (val) => {
 		setNomorTeleponPenerima(val)
@@ -146,13 +173,13 @@ function Dashboard() {
 		setOpenModalGalangDana(true);
 		setOpenModalNonBeasiswa(false);
 	}
-
+	const handleCloseModalNonBeasiswa = () => setOpenModalNonBeasiswa(false);
 	const handleCloseModalGalangDana = () => setOpenModalGalangDana(false);
 	const handleCloseModal = () => setOpenModal(false);
 
 	const handleDownloadTemplate = () => {
 		const templateUrl = '../templates/import.xlsx';
-	
+
 		const link = document.createElement('a');
 		link.href = templateUrl;
 		link.download = 'import.xlsx';
@@ -163,6 +190,7 @@ function Dashboard() {
 
 	const { getRootProps, getInputProps, isDragActive } = useDropzone({
 		accept: {
+
 		'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': ['.xlsx'],
 		},
 		onDrop: (acceptedFiles) => {
@@ -194,7 +222,7 @@ function Dashboard() {
 		const validExtensions = ['.xlsx'];
 		const fileExtension = uploadedFile.name.slice(((uploadedFile.name.lastIndexOf('.') - 1) >>> 0) + 2).toLowerCase();
 		if (!validExtensions.includes(`.${fileExtension}`)) {
-		setUploadStatus({ type: 'error', message: 'File harus berupa .xlsx.' });
+		setUploadStatus({ type: 'error', message: 'File harus berupa atau .xlsx.' });
 		return;
 		}
 
@@ -393,7 +421,7 @@ function Dashboard() {
 					nomor_rekening: nomorRekening,
 					nama_pemilik_rekening: namaPemilikRekening,
 					nama_bank: namaBank,
-					judul_galang_dana: judul,
+					judul_galang_dana: judulGalangDana,
 					waktu_galang_dana: waktuBerakhir,
 					deskripsi_galang_dana: deskripsi,
 					dana_yang_dibutuhkan: kebutuhanDana,
@@ -491,7 +519,7 @@ function Dashboard() {
 						<Typography>Import Data</Typography>
 						</Button>
 					</Box>
-			
+
 					{/* Modal Impor Data dengan Fitur yang Ditingkatkan */}
 					<Modal open={openModalImportData} onClose={handleCloseModalImportData}>
 						<Fade in={openModalImportData}>
@@ -526,11 +554,11 @@ function Dashboard() {
 								<input {...getInputProps()} />
 								<CloudUploadIcon sx={{ fontSize: 40, color: '#1559E6', mb: 1 }} />
 								{isDragActive ? (
-								<Typography>Drop the file here...</Typography>
+								<Typography>Letakkan berkas di sini...</Typography>
 								) : uploadedFile ? (
 								<Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
 									<Typography sx={{ mr: 1 }}>
-									Selected file: {uploadedFile.name}
+									Berkas yang diunggah: {uploadedFile.name}
 									</Typography>
 									<IconButton onClick={handleRemoveFile} size="small">
 									<CancelIcon sx={{ color: '#1559E6' }} />
@@ -538,11 +566,11 @@ function Dashboard() {
 								</Box>
 								) : (
 								<Typography>
-									Drag and drop an Excel file (.xlsx) here, or click to select a file
+									Seret dan lepaskan berkas Excel (.xlsx) di sini, atau klik di sini untuk mengunggah berkas
 								</Typography>
 								)}
 							</Box>
-			
+
 							{uploadStatus && (
 								<Fade in={!!uploadStatus}>
 								<Box sx={{ mt: 2 }}>
@@ -550,7 +578,7 @@ function Dashboard() {
 								</Box>
 								</Fade>
 							)}
-			
+
 							<Box
 								sx={{
 								display: 'flex',
@@ -627,13 +655,14 @@ function Dashboard() {
 							</Box>
 							<Box sx={{ pt: 2, display: 'flex', justifyContent: 'flex-end' }}>
 								<Button variant='contained' onClick={createPenggalanganDanaBeasiswa}>Submit</Button>
+								<Button variant='outlined' onClick={handleCloseModal} sx={{ ml: 1 }}>Cancel</Button>
 							</Box>
 						</Box>
 					</Box>
 				</Modal>
 				<Modal
 					open={openModalNonBeasiswa}
-					onClose={handleCloseModalGalangDana}
+					onClose={handleCloseModalNonBeasiswa}
 					aria-labelledby="modal-modal-title"
 					aria-describedby="modal-modal-description"
 				>
@@ -649,11 +678,11 @@ function Dashboard() {
 							<Box sx={{ pt: 1, display: 'flex', width: '100%' }}>
 								<Box>
 									<Typography>Nama</Typography>
-									<TextField size='small' variant='outlined' label='cth: Hasbi' sx={{width: '100%'}} onChange={(val) => {handleNamaPenanggungJawabChange(val.target.value)}}/>
+									<AutoComplete onChange={handleNamaPenanggungJawabChange} placeholder='cth: Hasbi' textFieldLabel='cth: Hasbi' tableName='civitas_akademika' columnName='nama' suggestionDisplayField='nama' suggestionValueField='nama' value={namaPenanggungJawab}/>
 								</Box>
 								<Box sx={{ ml: 2 }}>
 									<Typography>NIM/NIP</Typography>
-									<TextField size='small' variant='outlined' label='cth: 081424001' sx={{width: '100%'}} onChange={(val) => {handleNomorIndukPenanggungJawabChange(val.target.value)}}/>
+									<AutoComplete onChange={handleNomorIndukPenanggungJawabChange} placeholder='cth: 191524024' textFieldLabel='cth: 191524024' tableName='civitas_akademika' columnName='nomor_induk' suggestionDisplayField='nomor_induk' suggestionValueField='nomor_induk' value={nomorIndukPenanggungJawab}/>
 								</Box>
 								<Box sx={{ ml: 2 }}>
 									<Typography>No Telepon</Typography>
@@ -667,11 +696,11 @@ function Dashboard() {
 							<Box sx={{ display: 'flex', mt: 1 }}>
 								<Box>
 									<Typography>Nama</Typography>
-									<TextField size='small' variant='outlined' label='cth: John Doe' sx={{ width: '100%' }} onChange={(val) => {handleNamaPenerimaChange(val.target.value)}}/>
+									<AutoComplete onChange={handleNamaPenerimaChange} placeholder='cth: Hasbi' textFieldLabel='cth: Hasbi' tableName='civitas_akademika' columnName='nama' suggestionDisplayField='nama' suggestionValueField='nama' value={namaPenerima}/>
 								</Box>
 								<Box sx={{ml: 2}}>
 									<Typography>NIM/NIP</Typography>
-									<TextField size='small' variant='outlined' label='cth: 191524024' sx={{ width: '100%' }} onChange={(val) => {handleNomorIndukPenerimaChange(val.target.value)}}/>
+									<AutoComplete onChange={handleNomorIndukPenerimaChange} placeholder='cth: 231511000' textFieldLabel='cth: 231511000' tableName='civitas_akademika' columnName='nomor_induk' suggestionDisplayField='nomor_induk' suggestionValueField='nomor_induk' value={nomorIndukPenerima}/>	
 								</Box>
 								<Box sx={{ml: 2}}>
 									<Typography>No Telepon</Typography>
@@ -691,17 +720,18 @@ function Dashboard() {
 									<Typography>Nomor Rekening</Typography>
 									<TextField size='small' variant='outlined' label='cth: 13000462110001' sx={{ width: '100%' }} onChange={(val) => {handleNomorRekeningChange(val.target.value)}}/>
 								</Box>
-								
+
 							</Box>
 							<Box sx={{ pt: 2, display: 'flex', justifyContent: 'flex-end' }}>
 								<Button variant='contained' onClick={handleOpenGalangDana}>Selanjutnya</Button>
+								<Button variant='outlined' onClick={handleCloseModalNonBeasiswa} sx={{ ml: 1 }}>Batal</Button>
 							</Box>
 						</Box>
 					</Box>
 				</Modal>
 				<Modal
 					open={openModalGalangDana}
-					onClose={handleCloseModal}
+					onClose={handleCloseModalGalangDana}
 					aria-labelledby="modal-modal-title"
 					aria-describedby="modal-modal-description"
 				>
@@ -746,10 +776,11 @@ function Dashboard() {
 									<TextField size='small' variant='outlined' label='cth: 5000000' sx={{ width: '100%' }} onChange={(val) => {handleKebutuhanDanaChange(val.target.value)}}/>
 								</Box>
 							</Box>
-						</Box>
-						<Box sx={{ display: 'flex', justifyContent: 'flex-end', pr: 2, pb: 2 }}>
-							<Button variant='contained' onClick={createPenggalanganDanaNonBeasiswa} sx={{ mr: 1 }}>Submit</Button>
-							<Button variant='outlined' onClick={handleOpenNonBeasiswa}>Sebelumnya</Button>
+							<Box sx={{ pt: 2, display: 'flex', justifyContent: 'flex-end' }}>
+								<Button variant='contained' onClick={createPenggalanganDanaNonBeasiswa}>Submit</Button>
+								<Button variant='outlined' onClick={handleOpenNonBeasiswa} sx={{ ml: 1 }}>Sebelumnya</Button>
+								<Button variant='outlined' onClick={handleCloseModalGalangDana} sx={{ ml: 1 }}>Batal</Button>
+							</Box>
 						</Box>
 					</Box>
 				</Modal>
